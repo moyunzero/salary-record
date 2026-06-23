@@ -590,6 +590,7 @@ Component({
       this._frameIdx = 0;
       this._cycleStartAt = Date.now();
       this._inRotation = false;
+      this._playMeowClipSfx(this._activeClipName);
       this.updateSpriteStyle();
     },
 
@@ -705,6 +706,7 @@ Component({
       this._microSession.tapTimes = [now - 2000, now - 1000, now];
       const result = recordTap(this._microSession, now);
       if (result.triggeredPatrol) {
+        playCompanionSfx('meow_mid', 1);
         this._microHold = false;
         this._scheduleNextMicro(false);
       }
@@ -731,6 +733,16 @@ Component({
       );
     },
 
+    _playMeowClipSfx(clipName) {
+      if (!clipName || !clipName.startsWith('meow_')) return;
+      const excited =
+        this._microSession &&
+        isExcitedPatrol(this._microSession, Date.now());
+      const id =
+        excited && clipName === 'meow_stand' ? 'meow_mid' : 'meow_soft';
+      playCompanionSfx(id, 0.7);
+    },
+
     playCompanionOverlay(reaction) {
       if (!reaction || !reaction.clip || this.isInteractionBusy()) return false;
       this._overlayClip = reaction.clip;
@@ -738,7 +750,9 @@ Component({
       this._overlaySingleCycle = !!reaction.singleCycle;
       this._overlayUntil = Date.now() + (reaction.durationMs || 2500);
       this._frameIdx = 0;
-      if (reaction.sfx) {
+      if (reaction.clip.startsWith('meow_')) {
+        this._playMeowClipSfx(reaction.clip);
+      } else if (reaction.sfx) {
         playCompanionSfx(reaction.sfx, reaction.sfxProb == null ? 1 : reaction.sfxProb);
       }
       this.updateSpriteStyle();
@@ -1290,6 +1304,12 @@ Component({
         this._arcWalkActive = false;
         this._arcWalkRemaining = 0;
         this._microWalkFromMicro = false;
+        if (
+          this._microSession &&
+          isExcitedPatrol(this._microSession, Date.now())
+        ) {
+          playCompanionSfx('meow_mid', 0.15);
+        }
         this._onMicroClipCycleComplete(Date.now());
         return;
       }
@@ -1794,6 +1814,7 @@ Component({
         if (!this._microSession) this._microSession = createMicroSession();
         const tapResult = recordTap(this._microSession, now);
         if (tapResult.triggeredPatrol) {
+          playCompanionSfx('meow_mid', 1);
           this._microHold = false;
           this._inSleep4Hold = false;
           this._scheduleNextMicro(false);
@@ -1845,7 +1866,7 @@ Component({
       this._overlayUntil = Date.now() + duration;
       this._frameIdx = 0;
       this._tapCooldownUntil = Date.now() + TAP_COOLDOWN_MS;
-      playCompanionSfx('meow', 0.3);
+      this._playMeowClipSfx(pick.clip);
       this.updateSpriteStyle();
       this.emitDebugInfo();
     },
@@ -1856,6 +1877,9 @@ Component({
       const touchiness = (this._habit && this._habit.touchiness) || 'low';
       const reaction = pickHeadPatReaction(touchiness);
       if (!this.playCompanionOverlay(reaction)) return;
+      if (touchiness === 'high' && reaction.clip !== 'hiss_l' && reaction.clip !== 'scratch_l') {
+        playCompanionSfx('meow_loud', 0.5 + Math.random() * 0.5);
+      }
       this._headPatCooldownUntil = Date.now() + HEAD_PAT_COOLDOWN_MS;
     },
 
