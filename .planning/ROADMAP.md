@@ -197,7 +197,7 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 6/6 plans complete · **Status:** Complete
+**Plans:** 10 plans (Waves 0–6) · **Status:** Wave 5 complete; Wave 6 micro-behavior planned
 Plans:
 **Wave 0**
 
@@ -221,6 +221,13 @@ Plans:
 **Wave 5** *(blocked on Wave 4 completion)*
 
 - [x] 07-05-PLAN.md — home integration + 07-UAT · wave 5
+
+**Wave 6** *(Pet Micro-Behavior — Launch before Phase 8)*
+
+- [ ] 07-06-PLAN.md — Re-run 3-cat sprite pipeline; verify 43 clips all variants · wave 6
+- [ ] 07-07-PLAN.md — pet-micro.js pure core + excited patrol + interest points + tests · wave 6
+- [ ] 07-08-PLAN.md — cat-pet micro runner replaces pickArc; tap tracker; debug presets · wave 6 · depends 07-07
+- [ ] 07-09-PLAN.md — companion-sfx meow + docs + 07-MICRO-UAT · wave 6 · depends 07-08
 
 **Success Criteria:**
 
