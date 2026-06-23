@@ -18,20 +18,25 @@ function baseName(id) {
 
 function verifyVariant(id) {
   const jsonPath = path.join(OUT, `${baseName(id)}.json`);
-  const pngPath = path.join(OUT, `${baseName(id)}.png`);
+  const sheetName = id === 'cat1' ? 'cat1-sheet.png' : `${id}-sheet.png`;
+  const sheetPath = path.join(OUT, sheetName);
 
-  if (!fs.existsSync(jsonPath) || !fs.existsSync(pngPath)) {
-    throw new Error(`${id}: missing atlas files`);
+  if (!fs.existsSync(jsonPath) || !fs.existsSync(sheetPath)) {
+    throw new Error(`${id}: missing atlas json or sheet png`);
   }
 
   const atlas = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-  const pngBytes = fs.statSync(pngPath).size;
+  if (atlas.meta?.mode !== 'source-sheet') {
+    throw new Error(`${id}: expected meta.mode source-sheet — re-run slice-cat-sprites.mjs`);
+  }
+
+  const pngBytes = fs.statSync(sheetPath).size;
 
   if (pngBytes >= MAX_PNG_BYTES) {
     throw new Error(`${id}: atlas PNG ${pngBytes} bytes exceeds ${MAX_PNG_BYTES} limit`);
   }
 
-  if (atlas.meta?.spriteSize !== 16 || atlas.meta?.displayScale !== 4) {
+  if (atlas.meta?.spriteSize !== 32 || atlas.meta?.displayScale !== 2) {
     throw new Error(`${id}: invalid meta.spriteSize or displayScale`);
   }
 
@@ -50,8 +55,8 @@ function verifyVariant(id) {
       if (!rect) {
         throw new Error(`${id}: clip ${clipName} missing frame ${idx} in frames map`);
       }
-      if (rect.w !== 16 || rect.h !== 16) {
-        throw new Error(`${id}: frame ${idx} size ${rect.w}x${rect.h}, expected 16x16`);
+      if (rect.w !== 32 || rect.h !== 32) {
+        throw new Error(`${id}: frame ${idx} size ${rect.w}x${rect.h}, expected 32x32`);
       }
       frameChecks++;
     }
