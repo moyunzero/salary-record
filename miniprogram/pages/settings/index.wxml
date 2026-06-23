@@ -1,0 +1,206 @@
+<view class="page-shell page-shell-sub">
+  <view class="ambient ambient-top"></view>
+  <view class="ambient ambient-side"></view>
+  <view class="grain"></view>
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <view class="sub-nav-bar">
+    <view class="sub-nav-back" bindtap="onBack">‹</view>
+    <text class="sub-nav-title">工作设置</text>
+  </view>
+
+  <view class="page-body">
+    <view class="card card-accent">
+      <view class="section-head">
+        <view class="section-badge">¥</view>
+        <view>
+          <view class="section-label">税前月薪</view>
+          <view class="title">调整你的月薪</view>
+        </view>
+      </view>
+      <view class="input-wrap">
+        <text class="input-prefix tabular">¥</text>
+        <input class="input-hero tabular" type="digit" value="{{monthlySalary}}" bindinput="onSalaryInput" />
+      </view>
+    </view>
+
+    <block wx:if="{{pageReady}}">
+    <view class="card">
+      <view class="section-head">
+        <view class="section-badge">保</view>
+        <view>
+          <view class="section-label">五险一金</view>
+          <view class="title">个人缴纳比例</view>
+        </view>
+      </view>
+      <view class="hint">参考各地常见比例，以当地社保为准</view>
+      <view class="preset-list">
+        <view
+          wx:for="{{insurancePresets}}"
+          wx:key="id"
+          class="preset-item {{selectedInsurancePreset === item.id ? 'preset-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectInsurancePreset"
+        >
+          <view class="preset-radio">
+            <view class="preset-radio-dot" wx:if="{{selectedInsurancePreset === item.id}}"></view>
+          </view>
+          <view class="preset-content">
+            <text class="preset-name">{{item.name}}</text>
+            <text class="preset-note">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="fine-tune-toggle" bindtap="toggleInsuranceFineTune">
+        <text>微调比例（可选）</text>
+        <text class="fine-tune-chevron {{insuranceFineTuneOpen ? 'open' : ''}}">›</text>
+      </view>
+      <view class="fine-tune-body" wx:if="{{insuranceFineTuneOpen}}">
+        <view class="slider-row">
+          <view class="slider-label"><text>养老</text><text class="tabular">{{insurancePercent.pension}}%</text></view>
+          <slider min="0" max="20" step="0.5" value="{{insurancePercent.pension}}" data-key="pension" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>医疗</text><text class="tabular">{{insurancePercent.medical}}%</text></view>
+          <slider min="0" max="10" step="0.5" value="{{insurancePercent.medical}}" data-key="medical" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>失业</text><text class="tabular">{{insurancePercent.unemployment}}%</text></view>
+          <slider min="0" max="5" step="0.1" value="{{insurancePercent.unemployment}}" data-key="unemployment" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>公积金</text><text class="tabular">{{insurancePercent.fund}}%</text></view>
+          <slider min="0" max="20" step="0.5" value="{{insurancePercent.fund}}" data-key="fund" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-head">
+        <view class="section-badge">时</view>
+        <view>
+          <view class="section-label">标准工时</view>
+          <view class="title">你的工作制度</view>
+        </view>
+      </view>
+      <view class="hint">劳动法：每日工作时间不超过 8 小时</view>
+      <view class="preset-list">
+        <view
+          wx:for="{{workPresets}}"
+          wx:key="id"
+          class="preset-item {{selectedWorkPreset === item.id ? 'preset-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectWorkPreset"
+        >
+          <view class="preset-radio">
+            <view class="preset-radio-dot" wx:if="{{selectedWorkPreset === item.id}}"></view>
+          </view>
+          <view class="preset-content">
+            <text class="preset-name">{{item.name}}</text>
+            <text class="preset-note">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="fine-tune-toggle" bindtap="toggleWorkFineTune">
+        <text>微调工时（可选）</text>
+        <text class="fine-tune-chevron {{workFineTuneOpen ? 'open' : ''}}">›</text>
+      </view>
+      <view class="fine-tune-body" wx:if="{{workFineTuneOpen}}">
+        <view class="schedule-row">
+          <text class="schedule-label">上午上班</text>
+          <view class="schedule-pickers">
+            <picker mode="time" value="{{workSchedule.morning.start}}" bindchange="onMorningStart">
+              <view class="schedule-picker tabular">{{workSchedule.morning.start}}</view>
+            </picker>
+            <text class="schedule-dash">–</text>
+            <picker mode="time" value="{{workSchedule.morning.end}}" bindchange="onMorningEnd">
+              <view class="schedule-picker tabular">{{workSchedule.morning.end}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class="schedule-row">
+          <text class="schedule-label">午休</text>
+          <view class="schedule-pickers">
+            <picker mode="time" value="{{workSchedule.lunch.start}}" bindchange="onLunchStart">
+              <view class="schedule-picker tabular">{{workSchedule.lunch.start}}</view>
+            </picker>
+            <text class="schedule-dash">–</text>
+            <picker mode="time" value="{{workSchedule.lunch.end}}" bindchange="onLunchEnd">
+              <view class="schedule-picker tabular">{{workSchedule.lunch.end}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class="schedule-row">
+          <text class="schedule-label">下午上班</text>
+          <view class="schedule-pickers">
+            <picker mode="time" value="{{workSchedule.afternoon.start}}" bindchange="onAfternoonStart">
+              <view class="schedule-picker tabular">{{workSchedule.afternoon.start}}</view>
+            </picker>
+            <text class="schedule-dash">–</text>
+            <picker mode="time" value="{{workSchedule.afternoon.end}}" bindchange="onAfternoonEnd">
+              <view class="schedule-picker tabular">{{workSchedule.afternoon.end}}</view>
+            </picker>
+          </view>
+        </view>
+        <view class="schedule-computed">
+          <text class="schedule-label">每日标准工时</text>
+          <text class="schedule-computed-value tabular">{{computedStandardHours}} 小时（自动计算）</text>
+        </view>
+        <view class="sync-row schedule-night-row">
+          <text>含夜班（晚休 + 晚上上班）</text>
+          <switch checked="{{nightShiftEnabled}}" bindchange="onNightShiftToggle" color="#22c55e" />
+        </view>
+        <block wx:if="{{nightShiftEnabled}}">
+          <view class="schedule-row">
+            <text class="schedule-label">晚休</text>
+            <view class="schedule-pickers">
+              <picker mode="time" value="{{workSchedule.eveningRest.start}}" bindchange="onEveningRestStart">
+                <view class="schedule-picker tabular">{{workSchedule.eveningRest.start}}</view>
+              </picker>
+              <text class="schedule-dash">–</text>
+              <picker mode="time" value="{{workSchedule.eveningRest.end}}" bindchange="onEveningRestEnd">
+                <view class="schedule-picker tabular">{{workSchedule.eveningRest.end}}</view>
+              </picker>
+            </view>
+          </view>
+          <view class="schedule-row">
+            <text class="schedule-label">晚上上班</text>
+            <view class="schedule-pickers">
+              <picker mode="time" value="{{workSchedule.nightWork.start}}" bindchange="onNightWorkStart">
+                <view class="schedule-picker tabular">{{workSchedule.nightWork.start}}</view>
+              </picker>
+              <text class="schedule-dash">–</text>
+              <picker mode="time" value="{{workSchedule.nightWork.end}}" bindchange="onNightWorkEnd">
+                <view class="schedule-picker tabular">{{workSchedule.nightWork.end}}</view>
+              </picker>
+            </view>
+          </view>
+        </block>
+        <view class="slider-row">
+          <view class="slider-label"><text>每月工作天数</text><text class="tabular">{{workDaysPerMonth}} 天</text></view>
+          <slider min="18" max="26" step="0.25" value="{{workDaysPerMonth}}" bindchanging="onWorkDays" bindchange="onWorkDays" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+      </view>
+    </view>
+    </block>
+
+    <view class="card">
+      <view class="section-head">
+        <view class="section-badge">云</view>
+        <view>
+          <view class="section-label">云端备份</view>
+          <view class="title">可选加密同步</view>
+        </view>
+      </view>
+      <view class="hint">AES 加密备份至微信云开发，默认关闭</view>
+      <view class="sync-row">
+        <text>开启云端备份</text>
+        <switch checked="{{cloudSyncEnabled}}" bindchange="onToggleCloudSync" color="#22c55e" />
+      </view>
+      <view class="hint" wx:if="{{cloudSyncEnabled}}">上次同步：{{lastSyncDisplay}}</view>
+      <view class="sync-logout" wx:if="{{cloudSyncEnabled}}" bindtap="onLogoutCloud">退出登录</view>
+    </view>
+
+    <button class="btn-primary btn-block {{canSave ? '' : 'btn-disabled'}}" bindtap="onSave" hover-class="btn-hover">保存设置</button>
+  </view>
+</view>
