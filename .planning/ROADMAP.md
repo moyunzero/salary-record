@@ -197,7 +197,7 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 2/6 plans complete · **Status:** In progress — Wave 1 done
+**Plans:** 3/6 plans complete · **Status:** In progress — Wave 2 done
 Plans:
 **Wave 0**
 
@@ -206,9 +206,9 @@ Plans:
 **Wave 1**
 - [x] 07-01-PLAN.md — work-schedule.js + tests + migrateSettings · wave 1
 
-**Wave 2** *(blocked on Wave 1 completion)*
+**Wave 2**
 
-- [ ] 07-02-PLAN.md — settings segmented schedule UI (replace standardHours slider) · wave 2
+- [x] 07-02-PLAN.md — settings segmented schedule UI (replace standardHours slider) · wave 2
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
