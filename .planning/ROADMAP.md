@@ -197,7 +197,7 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 3/6 plans complete · **Status:** In progress — Wave 2 done
+**Plans:** 5/6 plans complete · **Status:** In progress — Wave 4 done
 Plans:
 **Wave 0**
 
@@ -212,11 +212,11 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 07-03-PLAN.md — pet-context FSM + tests · wave 3
+- [x] 07-03-PLAN.md — pet-context FSM + tests · wave 3
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 07-04-PLAN.md — cat-pet canvas 2d component · wave 4
+- [x] 07-04-PLAN.md — cat-pet canvas 2d component · wave 4
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
