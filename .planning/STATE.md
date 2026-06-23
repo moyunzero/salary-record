@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-08-PLAN.md
-last_updated: "2026-06-23T17:10:00.000Z"
-last_activity: 2026-06-23 — Completed 07-08 cat-pet micro runner integration
+stopped_at: Completed 07-09-PLAN.md
+last_updated: "2026-06-23T16:10:00.000Z"
+last_activity: 2026-06-23 — Completed 07-09 meow SFX + docs + Wave 6 UAT checklist
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 30
-  completed_plans: 29
-  percent: 97
+  completed_plans: 30
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 ## Current Position
 
-Phase: 7 (pet-companion) — in progress (9/10 plans)
-Phase 8: launch — pending
-Status: Ready for 07-09 companion-sfx + docs
-Last activity: 2026-06-23 — Completed 07-08 cat-pet micro runner integration
+Phase: 7 (pet-companion) — complete (10/10 plans; Wave 6 closed)
+Phase 8: launch — ready
+Status: Wave 6 COMP-01 done; operator pending 07-MICRO-UAT T-M1–T-M8 in DevTools
+Last activity: 2026-06-23 — Completed 07-09 meow SFX + docs + Wave 6 UAT checklist
 
-Progress: [█████████░] 97% (Phase 7 plan 07-08 complete; 07-09 remaining)
+Progress: [██████████] 100% (Phase 7 all plans complete; Phase 8 Launch next)
 
 ## Accumulated Context
 
@@ -52,6 +52,9 @@ Progress: [█████████░] 97% (Phase 7 plan 07-08 complete; 07-
 - **Cat-pet component (07-04):** cat1-atlas only; §6.1 clip map + rotation pools; §6.2 tap overlay 8s cooldown; 64×64 catchtap; 4–8fps rAF
 - **Pet micro core (07-07):** pet-micro.js pure pool — weights, hard gates, excited patrol, interest points; test:core coverage
 - **Cat-pet micro runner (07-08):** useMicroFsm default; pickNextMicroBehavior block runner; done-night sleep4 hold; debug 12 presets
+- **Meow SFX + Wave 6 close (07-09):** companion-sfx meow_soft/mid/loud; docs micro scheduler; 07-MICRO-UAT pending operator verify
+- Meow SFX Launch scope: meow_soft/mid/loud only via companion-sfx.js; no ambient/purr
+- Wave 6 UAT T-M1–T-M8 pending operator DevTools verify
 
 ### Blockers/Concerns
 
@@ -59,6 +62,6 @@ Progress: [█████████░] 97% (Phase 7 plan 07-08 complete; 07-
 
 ## Session Continuity
 
-Last session: 2026-06-23T17:10:00.000Z
-Stopped at: Completed 07-08-PLAN.md  
-Resume file: None — ready for 07-09 companion-sfx + docs
+Last session: 2026-06-23T16:10:00.000Z
+Stopped at: Completed 07-09-PLAN.md  
+Resume file: None — Phase 8 Launch next; operator to run 07-MICRO-UAT in DevTools

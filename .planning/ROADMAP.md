@@ -228,7 +228,7 @@ Plans:
 - [x] 07-06-PLAN.md — Re-run 3-cat sprite pipeline; verify 43 clips all variants · wave 6
 - [x] 07-07-PLAN.md — pet-micro.js pure core + excited patrol + interest points + tests · wave 6
 - [x] 07-08-PLAN.md — cat-pet micro runner replaces pickArc; tap tracker; debug presets · wave 6 · depends 07-07
-- [ ] 07-09-PLAN.md — companion-sfx meow + docs + 07-MICRO-UAT · wave 6 · depends 07-08
+- [x] 07-09-PLAN.md — companion-sfx meow + docs + 07-MICRO-UAT · wave 6 · depends 07-08
 
 **Success Criteria:**
 
