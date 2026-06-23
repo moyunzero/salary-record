@@ -1,7 +1,7 @@
 # Roadmap: 薪时宝 v1.0
 
 **Milestone:** v1.0 薪时宝 MVP — 核心 + 仪式感 + 小程序上线  
-**Phases:** 7 active (Phase 6 Dual Platform cancelled → replaced by Navigation IA)  
+**Phases:** 8 active (Phase 6 Dual Platform cancelled → replaced by Navigation IA)  
 **Requirements:** 29 active (3 deferred: PLAT-02, PLAT-03, SHIP-03)  
 **Design reference:** `docs/DESIGN.md`
 
@@ -18,8 +18,9 @@
 | 3 | Records & Income | 3/3 · UAT 6/6 | Complete | 2026-06-22 |
 | 4 | Ritual & Design | 4/4 | Complete    | 2026-06-22 |
 | 5 | Cloud Sync | 4/4 · UAT 7/7 | Complete    | 2026-06-23 |
-| 6 | Navigation IA | — | Ready to plan | — |
+| 6 | Navigation IA | 4/4 · UAT 6/6 | Complete | 2026-06-23 |
 | 7 | Launch | 小程序提审上线 | SHIP-01–02 | 3 |
+| 8 | Pet Companion | 工时猫 + 分段作息 | COMP-01, SET-03 | 5 |
 
 ---
 
@@ -164,14 +165,14 @@ Plans:
 
 **Design:** `.planning/phases/XSB-06-navigation-ia/06-CONTEXT.md`
 
-**Plans:** 4/4 planned · **Status:** Ready to execute
+**Plans:** 4/4 plans complete · **UAT:** 6/6 pass · **Status:** Complete (2026-06-23)
 
 Plans:
 
-- [ ] 06-01-PLAN.md — tabBar 2-tab + income→record navigateTo + icon script · wave 1
-- [ ] 06-02-PLAN.md — extract `pages/settings` from profile · wave 2
-- [ ] 06-03-PLAN.md — profile hub refactor (4 link rows) · wave 3
-- [ ] 06-04-PLAN.md — sub-page back nav + page-shell-sub + 06-UAT · wave 4
+- [x] 06-01-PLAN.md — tabBar 2-tab + income→record navigateTo + icon script · wave 1
+- [x] 06-02-PLAN.md — extract `pages/settings` from profile · wave 2
+- [x] 06-03-PLAN.md — profile hub refactor (4 link rows) · wave 3
+- [x] 06-04-PLAN.md — sub-page back nav + page-shell-sub + 06-UAT · wave 4
 
 **Success Criteria:**
 
@@ -204,6 +205,31 @@ Plans:
 
 ---
 
+### Phase 8: Pet Companion
+
+**Goal:** v1.1 — 首页像素猫情境陪伴 + 工作设置分段作息表（自动推导标准工时）。
+
+**Requirements:** COMP-01, SET-03（见 `08-CONTEXT.md`）
+
+**Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-08-pet-companion/08-CONTEXT.md`
+
+**Plans:** 0/0 · **Status:** Context gathered — ready for `/gsd-plan-phase 8`
+
+**Success Criteria:**
+
+1. `workSchedule` 保存后 `standardHoursPerDay` 正确推导；稀释/时薪无回归
+2. 猫 FSM 覆盖 7 情境 + 加班 L1–L4 + 点击反应
+3. 首页猫 64×64，不挡打卡 CTA
+4. 老用户迁移 + 云同步 schedule
+5. `npm run test:core` + 新增 schedule/pet 单测通过
+
+**Depends on:** Phase 7 Launch  
+**Estimated:** ~6–9 天
+
+> **Note:** Launch 后 v1.1；不阻塞 Phase 7 提审。
+
+---
+
 ## Coverage Validation
 
 - [x] All 29 active v1 requirements mapped to phases
@@ -213,4 +239,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-06-22*  
-*Last updated: 2026-06-23 — Phase 6 Navigation IA added; Dual Platform cancelled*
+*Last updated: 2026-06-23 — Phase 8 Pet Companion context gathered*
