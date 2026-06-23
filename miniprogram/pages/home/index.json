@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "custom",
+  "backgroundColor": "#0a101f",
+  "usingComponents": {
+    "money-rain": "/components/money-rain/index",
+    "share-card": "/components/share-card/index",
+    "cat-pet": "/components/cat-pet/index"
+  }
+}

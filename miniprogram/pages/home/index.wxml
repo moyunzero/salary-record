@@ -1,0 +1,104 @@
+<view class="page-shell page-shell-tab">
+  <view class="ambient ambient-top"></view>
+  <view class="ambient ambient-side"></view>
+  <view class="grain"></view>
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <view class="page-body">
+    <view class="page-header" bindlongpress="onDevSeedCrossDay">
+      <view class="page-header-row">
+        <view class="brand-mark">
+          <view class="brand-ring"></view>
+          <view class="brand-hand"></view>
+          <view class="brand-core"></view>
+        </view>
+        <text class="page-title">今日工时</text>
+      </view>
+      <text class="page-subtitle" wx:if="{{state === 'idle'}}">点击开始，记录今天的每一小时</text>
+      <text class="page-subtitle" wx:elif="{{state === 'working'}}">{{startTime}} 起 · {{inOvertime ? (devMockOvertime ? '今日份额已满 · 模拟' : '今日份额已满') : '实时更新中'}}</text>
+      <text class="page-subtitle" wx:else>{{startTime}} – {{endTime}} · 今日已收工</text>
+    </view>
+
+    <view class="card home-card">
+      <view class="home-hero">
+        <text class="home-hero-label">{{heroLabel}}</text>
+        <view class="preview-hero home-hero-amount">
+          <text class="preview-currency home-hero-currency">¥</text>
+          <text class="preview-value tabular {{amountSizeClass}} {{state === 'working' && !inOvertime ? 'earned-breathe' : ''}}">{{heroAmount}}</text>
+        </view>
+      </view>
+
+      <view class="ring-wrap" bindlongpress="onToggleMockOvertime">
+        <view class="ring-outer ring-outer-home" style="{{ringGlowStyle}}">
+          <view class="ring-svg" style="{{ringSvgStyle}}"></view>
+          <view class="ring-inner ring-inner-home">
+            <block wx:if="{{state === 'idle'}}">
+              <text class="ring-kicker">工时</text>
+              <text class="ring-metric ring-metric-idle">—</text>
+            </block>
+            <block wx:elif="{{inOvertime}}">
+              <text class="ring-kicker ring-kicker-overtime">加班</text>
+              <text class="ring-metric ring-metric-overtime tabular">{{overtimeDuration}}</text>
+            </block>
+            <block wx:else>
+              <text class="ring-kicker">进度</text>
+              <text class="ring-metric tabular">{{ringPct}}%</text>
+            </block>
+          </view>
+        </view>
+        <view class="ring-footnote" wx:if="{{inOvertime}}">
+          <view class="ring-footnote-dot"></view>
+          <text>时薪稀释中</text>
+        </view>
+      </view>
+
+      <view class="home-stats" wx:if="{{state !== 'idle'}}">
+        <view class="home-stat">
+          <text class="home-stat-label">有效时薪</text>
+          <text class="home-stat-value tabular" style="color: {{hourlyColor}}">¥{{effectiveHourly}}</text>
+        </view>
+        <view class="home-stat-divider"></view>
+        <view class="home-stat">
+          <text class="home-stat-label">稀释系数</text>
+          <text class="home-stat-value tabular" style="color: {{hourlyColor}}">{{dilutionDisplay}}%</text>
+        </view>
+      </view>
+      <view class="preview-meta home-meta" wx:else>
+        <text>开始上班后显示实时收入与稀释</text>
+      </view>
+    </view>
+
+    <view class="home-pet-wrap">
+      <cat-pet
+        context="{{petContext}}"
+        escalation="{{petEscalation}}"
+        app-state="{{state}}"
+      />
+    </view>
+
+    <button
+      wx:if="{{state === 'idle'}}"
+      class="btn-primary btn-block"
+      bindtap="onStartWork"
+      hover-class="btn-hover"
+    >开始上班</button>
+
+    <button
+      wx:elif="{{state === 'working'}}"
+      class="btn-primary btn-block"
+      bindtap="onClockOut"
+      hover-class="btn-hover"
+    >我已收工</button>
+
+    <button wx:else class="btn-primary btn-block btn-disabled" disabled>今日已收工</button>
+  </view>
+
+  <money-rain active="{{showMoneyRain}}" bind:complete="onMoneyRainComplete" />
+  <share-card
+    visible="{{showShareSheet}}"
+    payload="{{sharePayload}}"
+    bind:exported="onShareExported"
+    bind:shared="onShareCardShared"
+    bind:close="onShareClose"
+  />
+</view>
