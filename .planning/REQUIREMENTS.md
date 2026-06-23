@@ -47,7 +47,7 @@
 
 ### Pet Companion
 
-- [ ] **COMP-01**: User sees a contextual pixel cat on the home screen that reflects work state and schedule (idle, on shift, lunch, overtime, done)
+- [x] **COMP-01**: User sees a contextual pixel cat on the home screen that reflects work state and schedule (idle, on shift, lunch, overtime, done)
 
 ### Data & Sync
 
@@ -134,7 +134,7 @@ Deferred to v1.1+.
 | SYNC-03 | Phase 5 | Complete |
 | SET-03 | Phase 5 | Complete |
 | SET-04 | Phase 7 | Complete |
-| COMP-01 | Phase 7 | Pending |
+| COMP-01 | Phase 7 | Complete |
 | PLAT-01 | Phases 1–8 | Pending |
 | SHIP-01 | Phase 8 | Pending |
 | SHIP-02 | Phase 8 | Pending |
