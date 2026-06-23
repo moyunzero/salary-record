@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 ## Current Position
 
-Phase: 7 (pet-companion) — complete  
-Phase 8: launch — ready to start  
-Status: Ready to execute
-Last activity: 2026-06-23 — Completed 07-06 three-cat sprite pipeline re-run
+Phase: 7 (pet-companion) — in progress (8/10 plans)
+Phase 8: launch — pending
+Status: Ready for 07-08 cat-pet micro runner integration
+Last activity: 2026-06-23 — Completed 07-07 pet-micro pure core + tests
 
-Progress: [██████████] 100% (Phase 7 complete; Phase 8 Launch next)
+Progress: [█████████░] 93% (Phase 7 plan 07-07 complete; 07-08/07-09 remaining)
 
 ## Accumulated Context
 
@@ -50,7 +50,7 @@ Progress: [██████████] 100% (Phase 7 complete; Phase 8 Launc
 - **Settings schedule UI (07-02):** Segmented time pickers + night toggle; standardHoursPerDay derived on save via validateWorkSchedule
 - **Pet context FSM (07-03):** resolvePetContext pure core; L1–L3 time-based escalation; L4 via optional l3EnteredAt
 - **Cat-pet component (07-04):** cat1-atlas only; §6.1 clip map + rotation pools; §6.2 tap overlay 8s cooldown; 64×64 catchtap; 4–8fps rAF
-- **Home pet integration (07-05):** resolvePetContext on refresh tick; cat-pet between ring and CTA; always visible incl. idle; 07-UAT T1–T9
+- **Pet micro core (07-07):** pet-micro.js pure pool — weights, hard gates, excited patrol, interest points; test:core coverage
 
 ### Blockers/Concerns
 
@@ -58,6 +58,6 @@ Progress: [██████████] 100% (Phase 7 complete; Phase 8 Launc
 
 ## Session Continuity
 
-Last session: 2026-06-23T15:16:22.008Z
-Stopped at: Completed 07-06-PLAN.md  
-Resume file: None — ready for 07-07 micro-behavior plans
+Last session: 2026-06-23T16:30:00.000Z
+Stopped at: Completed 07-07-PLAN.md  
+Resume file: None — ready for 07-08 cat-pet runner integration
