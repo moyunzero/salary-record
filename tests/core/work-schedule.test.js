@@ -60,4 +60,24 @@ assert.strictEqual(customStart.morning.start, '10:00');
 assert.ok(validateWorkSchedule(defaultSchedule, false).ok);
 assert.strictEqual(validateWorkSchedule(defaultSchedule, false).hours, 8);
 
+const { migrateSettings } = require('../../miniprogram/services/settings');
+const legacy = migrateSettings({
+  monthlySalary: 15000,
+  workStartTime: '08:30',
+  standardHoursPerDay: 8,
+});
+assert.ok(legacy.workSchedule);
+assert.strictEqual(legacy.workSchedule.morning.start, '08:30');
+assert.strictEqual(legacy.nightShiftEnabled, false);
+assert.strictEqual(legacy.standardHoursPerDay, 8);
+
+const legacyNoHours = migrateSettings({ workStartTime: '09:00' });
+assert.strictEqual(legacyNoHours.standardHoursPerDay, 8);
+
+const alreadyMigrated = migrateSettings({
+  workSchedule: defaultSchedule,
+  nightShiftEnabled: true,
+});
+assert.strictEqual(alreadyMigrated.nightShiftEnabled, true);
+
 console.log('work-schedule.test.js: ok');
