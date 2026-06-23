@@ -19,7 +19,7 @@
 | 4 | Ritual & Design | 4/4 | Complete    | 2026-06-22 |
 | 5 | Cloud Sync | 4/4 · UAT 7/7 | Complete    | 2026-06-23 |
 | 6 | Navigation IA | 4/4 · UAT 6/6 | Complete | 2026-06-23 |
-| 7 | Pet Companion | 7/10 | In Progress|  |
+| 7 | Pet Companion | 8/10 | In Progress|  |
 | 8 | Launch | 小程序提审上线 | SHIP-01–02 | 3 |
 
 ---
@@ -197,7 +197,7 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 7/10 plans executed
+**Plans:** 8/10 plans executed
 Plans:
 **Wave 0**
 
@@ -226,7 +226,7 @@ Plans:
 **Wave 6** *(Pet Micro-Behavior — Launch before Phase 8)*
 
 - [x] 07-06-PLAN.md — Re-run 3-cat sprite pipeline; verify 43 clips all variants · wave 6
-- [ ] 07-07-PLAN.md — pet-micro.js pure core + excited patrol + interest points + tests · wave 6
+- [x] 07-07-PLAN.md — pet-micro.js pure core + excited patrol + interest points + tests · wave 6
 - [ ] 07-08-PLAN.md — cat-pet micro runner replaces pickArc; tap tracker; debug presets · wave 6 · depends 07-07
 - [ ] 07-09-PLAN.md — companion-sfx meow + docs + 07-MICRO-UAT · wave 6 · depends 07-08
 
