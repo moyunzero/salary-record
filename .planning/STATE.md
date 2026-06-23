@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-07-PLAN.md
-last_updated: "2026-06-23T16:30:00.000Z"
-last_activity: 2026-06-23 — Completed 07-07 pet-micro pure core + tests
+stopped_at: Completed 07-08-PLAN.md
+last_updated: "2026-06-23T17:10:00.000Z"
+last_activity: 2026-06-23 — Completed 07-08 cat-pet micro runner integration
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 30
-  completed_plans: 28
-  percent: 93
+  completed_plans: 29
+  percent: 97
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 ## Current Position
 
-Phase: 7 (pet-companion) — in progress (8/10 plans)
+Phase: 7 (pet-companion) — in progress (9/10 plans)
 Phase 8: launch — pending
-Status: Ready for 07-08 cat-pet micro runner integration
-Last activity: 2026-06-23 — Completed 07-07 pet-micro pure core + tests
+Status: Ready for 07-09 companion-sfx + docs
+Last activity: 2026-06-23 — Completed 07-08 cat-pet micro runner integration
 
-Progress: [█████████░] 93% (Phase 7 plan 07-07 complete; 07-08/07-09 remaining)
+Progress: [█████████░] 97% (Phase 7 plan 07-08 complete; 07-09 remaining)
 
 ## Accumulated Context
 
@@ -51,6 +51,7 @@ Progress: [█████████░] 93% (Phase 7 plan 07-07 complete; 07-
 - **Pet context FSM (07-03):** resolvePetContext pure core; L1–L3 time-based escalation; L4 via optional l3EnteredAt
 - **Cat-pet component (07-04):** cat1-atlas only; §6.1 clip map + rotation pools; §6.2 tap overlay 8s cooldown; 64×64 catchtap; 4–8fps rAF
 - **Pet micro core (07-07):** pet-micro.js pure pool — weights, hard gates, excited patrol, interest points; test:core coverage
+- **Cat-pet micro runner (07-08):** useMicroFsm default; pickNextMicroBehavior block runner; done-night sleep4 hold; debug 12 presets
 
 ### Blockers/Concerns
 
@@ -58,6 +59,6 @@ Progress: [█████████░] 93% (Phase 7 plan 07-07 complete; 07-
 
 ## Session Continuity
 
-Last session: 2026-06-23T16:30:00.000Z
-Stopped at: Completed 07-07-PLAN.md  
-Resume file: None — ready for 07-08 cat-pet runner integration
+Last session: 2026-06-23T17:10:00.000Z
+Stopped at: Completed 07-08-PLAN.md  
+Resume file: None — ready for 07-09 companion-sfx + docs
