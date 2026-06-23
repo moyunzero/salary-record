@@ -197,14 +197,14 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 1/6 plans complete · **Status:** In progress — Wave 0 done
+**Plans:** 2/6 plans complete · **Status:** In progress — Wave 1 done
 Plans:
 **Wave 0**
 
 - [x] 07-00-PLAN.md — Wave 0: slice 3 cat PNGs → atlas JSON + verify script (sharp devDep) · wave 0
 
 **Wave 1**
-- [ ] 07-01-PLAN.md — work-schedule.js + tests + migrateSettings · wave 1
+- [x] 07-01-PLAN.md — work-schedule.js + tests + migrateSettings · wave 1
 
 **Wave 2** *(blocked on Wave 1 completion)*
 

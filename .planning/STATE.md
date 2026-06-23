@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 7 in progress — Wave 0 complete
-stopped_at: Completed 07-00-PLAN.md
-last_updated: "2026-06-23T07:07:00.000Z"
-last_activity: 2026-06-23 — Completed 07-00 sprite atlas pipeline
+status: Phase 7 in progress — Wave 1 plan 07-01 complete
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-06-23T07:25:00.000Z"
+last_activity: 2026-06-23 — Completed 07-01 work-schedule + migrateSettings
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 26
-  completed_plans: 21
-  percent: 81
+  completed_plans: 22
+  percent: 85
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 Phase: 7 (pet-companion) — active  
 Phase 8: launch — blocked on Phase 7  
-Status: Phase 7 in progress — 07-00 complete, next 07-01  
-Last activity: 2026-06-23 — Completed 07-00 sprite atlas pipeline
+Status: Phase 7 in progress — 07-01 complete, next 07-02  
+Last activity: 2026-06-23 — Completed 07-01 work-schedule + migrateSettings
 
-Progress: [████████░░] 81% (Phase 7 Wave 0 done; 07-01 work-schedule next)
+Progress: [█████████░] 85% (Phase 7 Wave 1 done; 07-02 settings UI next)
 
 ## Accumulated Context
 
@@ -45,6 +45,7 @@ Progress: [████████░░] 81% (Phase 7 Wave 0 done; 07-01 work-
 - Platform: v1 仅微信小程序（2026-06-23 放弃 Donut 多端）
 - **Roadmap order (2026-06-23):** Phase 7 = 像素猫 + 分段作息，Phase 8 = 提审上线
 - **Sprite atlas (07-00):** OFFSET=8 in 32px grid; cat1-atlas shipped for v1 runtime; cat1.6/cat1.9 pre-built
+- **Work schedule (07-01):** Pure core/work-schedule.js; migrateSettings on getSettings; getLastWorkBlockEnd returns minutes
 
 ### Blockers/Concerns
 
@@ -53,5 +54,5 @@ Progress: [████████░░] 81% (Phase 7 Wave 0 done; 07-01 work-
 ## Session Continuity
 
 Last session: 2026-06-23  
-Stopped at: Completed 07-00-PLAN.md  
-Resume file: `.planning/phases/XSB-07-pet-companion/07-01-PLAN.md`
+Stopped at: Completed 07-01-PLAN.md  
+Resume file: `.planning/phases/XSB-07-pet-companion/07-02-PLAN.md`
