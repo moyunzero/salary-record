@@ -1,0 +1,18 @@
+{
+  "rest_sit_down": { "frames": [0, 1, 2, 3, 4, 5], "fps": 4, "loop": true },
+  "rest_lie_down": { "frames": [22, 23, 24, 25, 26, 27], "fps": 4, "loop": true },
+  "walk_down": { "frames": [44, 45, 46, 47], "fps": 6, "loop": true },
+  "sleep1_l_down": { "frames": [132, 133], "fps": 3, "loop": true },
+  "sleep2_l_down": { "frames": [143, 144], "fps": 3, "loop": true },
+  "sleep4_l_down": { "frames": [165, 166], "fps": 3, "loop": true },
+  "eat_down": { "frames": [220, 221, 222, 223, 224, 225, 226, 227], "fps": 6, "loop": true },
+  "meow_sit_down": { "frames": [308, 309, 310], "fps": 5, "loop": true },
+  "meow_stand_down": { "frames": [319, 320, 321], "fps": 5, "loop": true },
+  "yawn_sit_down": { "frames": [352, 353, 354, 355, 356, 357, 358, 359], "fps": 4, "loop": true },
+  "yawn_stand_down": { "frames": [363, 364, 365, 366, 367, 368, 369, 370], "fps": 4, "loop": true },
+  "wash_sit_down": { "frames": [396, 397, 398, 399, 400, 401, 402, 403, 404], "fps": 5, "loop": true },
+  "itch": { "frames": [440, 441, 442, 443, 444, 445], "fps": 6, "loop": true },
+  "hiss_left": { "frames": [451, 452], "fps": 4, "loop": true },
+  "paw_attack_down": { "frames": [484, 485, 486, 487, 488, 489, 490, 491, 492], "fps": 8, "loop": true },
+  "sad_sit_down": { "frames": [473], "fps": 2, "loop": true }
+}
