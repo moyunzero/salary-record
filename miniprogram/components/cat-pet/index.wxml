@@ -1,0 +1,7 @@
+<canvas
+  type="2d"
+  id="catCanvas"
+  class="cat-pet-canvas"
+  style="width: 64px; height: 64px;"
+  catchtap="onTap"
+></canvas>

@@ -1,0 +1,7 @@
+.cat-pet-canvas {
+  width: 64px;
+  height: 64px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
