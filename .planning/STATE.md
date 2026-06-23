@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 7 in progress — Wave 2 plan 07-02 complete
-stopped_at: Completed 07-02-PLAN.md
-last_updated: "2026-06-23T08:20:00.000Z"
-last_activity: 2026-06-23 — Completed 07-02 settings segmented schedule UI
+status: Phase 7 in progress — Wave 3 plan 07-03 complete
+stopped_at: Completed 07-03-PLAN.md
+last_updated: "2026-06-23T12:12:00.000Z"
+last_activity: 2026-06-23 — Completed 07-03 pet-context FSM core
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 26
-  completed_plans: 23
-  percent: 88
+  completed_plans: 24
+  percent: 92
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 Phase: 7 (pet-companion) — active  
 Phase 8: launch — blocked on Phase 7  
-Status: Phase 7 in progress — 07-02 complete, next 07-03  
-Last activity: 2026-06-23 — Completed 07-02 settings segmented schedule UI
+Status: Phase 7 in progress — 07-03 complete, next 07-04  
+Last activity: 2026-06-23 — Completed 07-03 pet-context FSM core
 
-Progress: [█████████░] 88% (Phase 7 Wave 2 done; 07-03 pet-context next)
+Progress: [█████████░] 92% (Phase 7 Wave 3 done; 07-04 cat-pet component next)
 
 ## Accumulated Context
 
@@ -47,6 +47,7 @@ Progress: [█████████░] 88% (Phase 7 Wave 2 done; 07-03 pet-c
 - **Sprite atlas (07-00):** OFFSET=8 in 32px grid; cat1-atlas shipped for v1 runtime; cat1.6/cat1.9 pre-built
 - **Work schedule (07-01):** Pure core/work-schedule.js; migrateSettings on getSettings; getLastWorkBlockEnd returns minutes
 - **Settings schedule UI (07-02):** Segmented time pickers + night toggle; standardHoursPerDay derived on save via validateWorkSchedule
+- **Pet context FSM (07-03):** resolvePetContext pure core; L1–L3 time-based escalation; L4 via optional l3EnteredAt
 
 ### Blockers/Concerns
 
@@ -55,5 +56,5 @@ Progress: [█████████░] 88% (Phase 7 Wave 2 done; 07-03 pet-c
 ## Session Continuity
 
 Last session: 2026-06-23  
-Stopped at: Completed 07-02-PLAN.md  
-Resume file: `.planning/phases/XSB-07-pet-companion/07-03-PLAN.md`
+Stopped at: Completed 07-03-PLAN.md  
+Resume file: `.planning/phases/XSB-07-pet-companion/07-04-PLAN.md`
