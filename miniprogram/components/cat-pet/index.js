@@ -103,11 +103,11 @@ const TAP_POOLS = {
   ],
   lunch: [
     { clip: 'meow_sit_down', weight: 0.5 },
-    { clip: 'eat_down', weight: 0.5 },
+    { clip: 'eat_down', weight: 0.5, singleCycle: true },
   ],
   dinner: [
     { clip: 'meow_sit_down', weight: 0.5 },
-    { clip: 'eat_down', weight: 0.5 },
+    { clip: 'eat_down', weight: 0.5, singleCycle: true },
   ],
   overtimeLow: [
     { clip: 'meow_stand_down', weight: 0.5 },
@@ -185,6 +185,7 @@ Component({
       this._overlayUntil = 0;
       this._overlayClip = null;
       this._overlaySingleFrame = false;
+      this._overlaySingleCycle = false;
 
       wx.nextTick(() => {
         this.ensureCanvas()
@@ -427,6 +428,7 @@ Component({
       if (this._overlayClip && Date.now() >= this._overlayUntil) {
         this._overlayClip = null;
         this._overlaySingleFrame = false;
+        this._overlaySingleCycle = false;
       }
       return this._activeClipName;
     },
@@ -444,11 +446,22 @@ Component({
         return;
       }
 
+      if (this._overlaySingleCycle) {
+        if (this._frameIdx >= clipDef.frames.length - 1) {
+          this._overlayClip = null;
+          this._overlaySingleCycle = false;
+          this._frameIdx = 0;
+        }
+        return;
+      }
+
       this._frameIdx += 1;
       if (this._frameIdx >= clipDef.frames.length) {
         this._frameIdx = clipDef.loop === false ? clipDef.frames.length - 1 : 0;
         if (this._overlayClip && Date.now() >= this._overlayUntil) {
           this._overlayClip = null;
+          this._overlaySingleFrame = false;
+          this._overlaySingleCycle = false;
         }
       }
     },
@@ -514,6 +527,7 @@ Component({
 
       this._overlayClip = pick.clip;
       this._overlaySingleFrame = !!pick.singleFrame;
+      this._overlaySingleCycle = !!pick.singleCycle;
       this._overlayUntil = Date.now() + duration;
       this._frameIdx = 0;
       this._tapCooldownUntil = Date.now() + TAP_COOLDOWN_MS;
