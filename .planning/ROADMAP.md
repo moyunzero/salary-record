@@ -197,7 +197,7 @@ Plans:
 
 **Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-**Plans:** 5/6 plans complete · **Status:** In progress — Wave 4 done
+**Plans:** 6/6 plans complete · **Status:** Complete
 Plans:
 **Wave 0**
 
@@ -220,7 +220,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 07-05-PLAN.md — home integration + 07-UAT · wave 5
+- [x] 07-05-PLAN.md — home integration + 07-UAT · wave 5
 
 **Success Criteria:**
 

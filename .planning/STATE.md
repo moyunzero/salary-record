@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 7 in progress — Wave 4 plan 07-04 complete
-stopped_at: Completed 07-04-PLAN.md
-last_updated: "2026-06-23T07:37:41.000Z"
-last_activity: 2026-06-23 — Completed 07-04 cat-pet canvas component
+status: Phase 7 complete — Wave 5 plan 07-05 complete
+stopped_at: Completed 07-05-PLAN.md
+last_updated: "2026-06-23T08:08:00.000Z"
+last_activity: 2026-06-23 — Completed 07-05 home integration + UAT
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 26
-  completed_plans: 25
-  percent: 96
+  completed_plans: 26
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 ## Current Position
 
-Phase: 7 (pet-companion) — active  
-Phase 8: launch — blocked on Phase 7  
-Status: Phase 7 in progress — 07-04 complete, next 07-05  
-Last activity: 2026-06-23 — Completed 07-04 cat-pet canvas component
+Phase: 7 (pet-companion) — complete  
+Phase 8: launch — ready to start  
+Status: Phase 7 complete — 07-05 done  
+Last activity: 2026-06-23 — Completed 07-05 home integration + UAT
 
-Progress: [██████████] 96% (Phase 7 Wave 4 done; 07-05 home integration next)
+Progress: [██████████] 100% (Phase 7 complete; Phase 8 Launch next)
 
 ## Accumulated Context
 
@@ -49,6 +49,7 @@ Progress: [██████████] 96% (Phase 7 Wave 4 done; 07-05 home 
 - **Settings schedule UI (07-02):** Segmented time pickers + night toggle; standardHoursPerDay derived on save via validateWorkSchedule
 - **Pet context FSM (07-03):** resolvePetContext pure core; L1–L3 time-based escalation; L4 via optional l3EnteredAt
 - **Cat-pet component (07-04):** cat1-atlas only; §6.1 clip map + rotation pools; §6.2 tap overlay 8s cooldown; 64×64 catchtap; 4–8fps rAF
+- **Home pet integration (07-05):** resolvePetContext on refresh tick; cat-pet between ring and CTA; always visible incl. idle; 07-UAT T1–T9
 
 ### Blockers/Concerns
 
@@ -57,5 +58,5 @@ Progress: [██████████] 96% (Phase 7 Wave 4 done; 07-05 home 
 ## Session Continuity
 
 Last session: 2026-06-23  
-Stopped at: Completed 07-04-PLAN.md  
-Resume file: `.planning/phases/XSB-07-pet-companion/07-05-PLAN.md`
+Stopped at: Completed 07-05-PLAN.md  
+Resume file: None — Phase 7 complete; start Phase 8 Launch
