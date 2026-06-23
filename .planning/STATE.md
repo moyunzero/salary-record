@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready
-stopped_at: Phase 7 — Launch (not started)
-last_updated: "2026-06-23T09:25:00.000Z"
-last_activity: 2026-06-23 — Phase 6 UAT 6/6 pass
+status: Phase 7 in progress — Wave 0 complete
+stopped_at: Completed 07-00-PLAN.md
+last_updated: "2026-06-23T07:07:00.000Z"
+last_activity: 2026-06-23 — Completed 07-00 sprite atlas pipeline
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 6
-  total_plans: 20
-  completed_plans: 20
-  percent: 86
+  total_plans: 26
+  completed_plans: 21
+  percent: 81
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-23)
 
 **Core value:** 用户每天打开 App，能直观看到「多工作 1 小时，实际少赚多少钱」，并一键收工打卡。  
-**Current focus:** Phase 7 — Launch（小程序提审上线）
+**Current focus:** Phase 7 Pet Companion（像素猫 + 分段作息）→ Phase 8 Launch 提审
 
 ## Current Position
 
-Phase: 7 (launch)
-Plan: Not started
-Status: Ready for /gsd-discuss-phase 7 or /gsd-plan-phase 7
-Last activity: 2026-06-23 — Phase 6 UAT 6/6 pass, Navigation IA complete
+Phase: 7 (pet-companion) — active  
+Phase 8: launch — blocked on Phase 7  
+Status: Phase 7 in progress — 07-00 complete, next 07-01  
+Last activity: 2026-06-23 — Completed 07-00 sprite atlas pipeline
 
-Progress: [█████████░] 86% (Phases 1–6 complete; Phase 7 next)
+Progress: [████████░░] 81% (Phase 7 Wave 0 done; 07-01 work-schedule next)
 
 ## Accumulated Context
 
@@ -43,6 +43,8 @@ Progress: [█████████░] 86% (Phases 1–6 complete; Phase 7 n
 - Cloud sync: Profile opt-in toggle; openId-derived AES; wx.login + 云函数 getOpenId；event-driven sync + onShow pull
 - Navigation IA: 2 Tab（首页·我）；record/income/settings 为子页；profile 薄 hub + settings 子页承载表单与云备份
 - Platform: v1 仅微信小程序（2026-06-23 放弃 Donut 多端）
+- **Roadmap order (2026-06-23):** Phase 7 = 像素猫 + 分段作息，Phase 8 = 提审上线
+- **Sprite atlas (07-00):** OFFSET=8 in 32px grid; cat1-atlas shipped for v1 runtime; cat1.6/cat1.9 pre-built
 
 ### Blockers/Concerns
 
@@ -51,5 +53,5 @@ Progress: [█████████░] 86% (Phases 1–6 complete; Phase 7 n
 ## Session Continuity
 
 Last session: 2026-06-23  
-Stopped at: Phase 7 — Launch  
-Resume file: `.planning/ROADMAP.md` (Phase 7)
+Stopped at: Completed 07-00-PLAN.md  
+Resume file: `.planning/phases/XSB-07-pet-companion/07-01-PLAN.md`

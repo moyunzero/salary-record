@@ -2,7 +2,7 @@
 
 **Milestone:** v1.0 薪时宝 MVP — 核心 + 仪式感 + 小程序上线  
 **Phases:** 8 active (Phase 6 Dual Platform cancelled → replaced by Navigation IA)  
-**Requirements:** 29 active (3 deferred: PLAT-02, PLAT-03, SHIP-03)  
+**Requirements:** 31 active (3 deferred: PLAT-02, PLAT-03, SHIP-03)  
 **Design reference:** `docs/DESIGN.md`
 
 **Platform decision (2026-06-23):** v1 仅微信小程序，放弃 Donut 多端 / iOS App。
@@ -19,8 +19,8 @@
 | 4 | Ritual & Design | 4/4 | Complete    | 2026-06-22 |
 | 5 | Cloud Sync | 4/4 · UAT 7/7 | Complete    | 2026-06-23 |
 | 6 | Navigation IA | 4/4 · UAT 6/6 | Complete | 2026-06-23 |
-| 7 | Launch | 小程序提审上线 | SHIP-01–02 | 3 |
-| 8 | Pet Companion | 工时猫 + 分段作息 | COMP-01, SET-03 | 5 |
+| 7 | Pet Companion | 工时猫 + 分段作息 | COMP-01, SET-04 | 5 |
+| 8 | Launch | 小程序提审上线 | SHIP-01–02 | 3 |
 
 ---
 
@@ -189,31 +189,38 @@ Plans:
 
 ---
 
-### Phase 7: Launch
+### Phase 7: Pet Companion
 
-**Goal:** 合规文档、小程序提审、上架。
+**Goal:** 首页像素猫情境陪伴 + 工作设置分段作息表（自动推导标准工时）。**Launch 前完成。**
 
-**Requirements:** SHIP-01, SHIP-02
+**Requirements:** COMP-01, SET-04（见 `07-CONTEXT.md`）
 
-**Success Criteria:**
+**Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-07-pet-companion/07-CONTEXT.md`
 
-1. Privacy policy published and linked in-app describing local + optional encrypted cloud storage
-2. WeChat mini program submitted and approved
+**Plans:** 1/6 plans complete · **Status:** In progress — Wave 0 done
+Plans:
+**Wave 0**
 
-**Depends on:** Phases 2–6  
-**Estimated:** ~0.5 week
+- [x] 07-00-PLAN.md — Wave 0: slice 3 cat PNGs → atlas JSON + verify script (sharp devDep) · wave 0
 
----
+**Wave 1**
+- [ ] 07-01-PLAN.md — work-schedule.js + tests + migrateSettings · wave 1
 
-### Phase 8: Pet Companion
+**Wave 2** *(blocked on Wave 1 completion)*
 
-**Goal:** v1.1 — 首页像素猫情境陪伴 + 工作设置分段作息表（自动推导标准工时）。
+- [ ] 07-02-PLAN.md — settings segmented schedule UI (replace standardHours slider) · wave 2
 
-**Requirements:** COMP-01, SET-03（见 `08-CONTEXT.md`）
+**Wave 3** *(blocked on Wave 2 completion)*
 
-**Design:** `docs/PET-SCHEDULE-DESIGN.md` · `.planning/phases/XSB-08-pet-companion/08-CONTEXT.md`
+- [ ] 07-03-PLAN.md — pet-context FSM + tests · wave 3
 
-**Plans:** 0/0 · **Status:** Context gathered — ready for `/gsd-plan-phase 8`
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 07-04-PLAN.md — cat-pet canvas 2d component · wave 4
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 07-05-PLAN.md — home integration + 07-UAT · wave 5
 
 **Success Criteria:**
 
@@ -223,20 +230,40 @@ Plans:
 4. 老用户迁移 + 云同步 schedule
 5. `npm run test:core` + 新增 schedule/pet 单测通过
 
-**Depends on:** Phase 7 Launch  
+**Depends on:** Phase 6  
 **Estimated:** ~6–9 天
 
-> **Note:** Launch 后 v1.1；不阻塞 Phase 7 提审。
+> **Note:** 2026-06-23 用户决策 — 先做像素猫，Phase 8 再提审。
+
+---
+
+### Phase 8: Launch
+
+**Goal:** 合规文档、小程序提审、上架。
+
+**Requirements:** SHIP-01, SHIP-02
+
+**Design:** `.planning/phases/XSB-08-launch/08-CONTEXT.md`
+
+**Plans:** 0/0 · **Status:** Not started — blocked on Phase 7
+
+**Success Criteria:**
+
+1. Privacy policy published and linked in-app describing local + optional encrypted cloud storage
+2. WeChat mini program submitted and approved
+
+**Depends on:** Phases 2–7  
+**Estimated:** ~0.5 week
 
 ---
 
 ## Coverage Validation
 
-- [x] All 29 active v1 requirements mapped to phases
+- [x] All 31 active v1 requirements mapped to phases
 - [x] No orphan phases without requirements
-- [x] Dependency order: Foundation → Home → Records → Ritual → Sync → Navigation IA → Launch
+- [x] Dependency order: Foundation → Home → Records → Ritual → Sync → Navigation IA → Pet Companion → Launch
 - [x] Design doc alignment: `docs/DESIGN.md` M1–M7 milestones（M6/M7 合并为小程序提审）
 
 ---
 *Roadmap created: 2026-06-22*  
-*Last updated: 2026-06-23 — Phase 8 Pet Companion context gathered*
+*Last updated: 2026-06-23 — Phase 7/8 reorder: Pet Companion before Launch*
