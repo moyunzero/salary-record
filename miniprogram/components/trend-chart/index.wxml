@@ -1,0 +1,23 @@
+<view class="chart-wrap">
+  <view class="col-chart">
+    <view
+      class="col-item {{selectedIndex === index ? 'col-item-selected' : ''}}"
+      wx:for="{{bars}}"
+      wx:for-index="index"
+      wx:key="label"
+      bindtap="onBarTap"
+      data-index="{{index}}"
+    >
+      <view class="col-tip" wx:if="{{selectedIndex === index}}">
+        <text class="col-tip-text tabular">¥{{item.displayMoney}}</text>
+      </view>
+      <view class="col-bar-area">
+        <view
+          class="col-bar {{item.value > 0 ? 'col-bar-active' : ''}} {{selectedIndex === index ? 'col-bar-selected' : ''}}"
+          style="height: {{item.heightPct}}%;"
+        ></view>
+      </view>
+      <text class="col-label {{selectedIndex === index ? 'col-label-selected' : ''}}">{{item.label}}</text>
+    </view>
+  </view>
+</view>

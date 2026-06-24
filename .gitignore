@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+miniprogram/node_modules/
+cloudfunctions/*/node_modules/
+
+# WeChat DevTools: npm 构建产物（vendor/ 为手工 vendored，需保留）
+miniprogram/miniprogram_npm/
+
+# WeChat DevTools: 本机私有配置（覆盖 project.config.json）
+project.private.config.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test / E2E output
+tests/e2e/output/
+
+# Local tooling
+.codegraph/
+.agents/
+.cursor/
+
+# Planning / design docs（非运行时代码）
+.planning/
+docs/

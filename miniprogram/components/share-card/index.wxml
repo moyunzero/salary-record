@@ -1,0 +1,62 @@
+<canvas
+  type="2d"
+  id="shareCanvas"
+  class="share-canvas-hidden"
+  style="width: 375px; height: 500px;"
+></canvas>
+
+<view class="share-mask" hidden="{{!visible}}" catchtouchmove="preventMove">
+  <view class="share-panel">
+    <view class="share-handle"></view>
+
+    <view class="share-header">
+      <text class="share-title">今日跑路卡</text>
+      <text class="share-subtitle" wx:if="{{payload}}">{{payload.date}}</text>
+    </view>
+
+    <view class="share-card-preview" wx:if="{{payload}}">
+      <view class="share-preview-brand">
+        <view class="share-brand-mark">
+          <view class="share-brand-ring"></view>
+          <view class="share-brand-hand"></view>
+          <view class="share-brand-core"></view>
+        </view>
+        <text class="share-brand-name">薪时宝</text>
+      </view>
+
+      <text class="share-preview-label">今日血汗</text>
+      <view class="share-preview-hero">
+        <text class="share-preview-currency">¥</text>
+        <text class="share-preview-value">{{payload.earned}}</text>
+      </view>
+
+      <view class="share-preview-meta">
+        <text>{{payload.startTime}} – {{payload.endTime}}</text>
+        <text class="share-preview-dot">·</text>
+        <text>有效时薪 ¥{{payload.effectiveHourly}}</text>
+      </view>
+
+      <text class="share-disclaimer">数据来自你亲手搬的每一块砖</text>
+    </view>
+
+    <view class="share-loading" wx:else>加载中…</view>
+
+    <view class="share-actions">
+      <button
+        class="share-btn share-btn-primary"
+        bindtap="onShareTap"
+        disabled="{{!exportPath}}"
+        hover-class="share-btn-hover"
+      >晒给狱友看</button>
+      <button
+        class="share-btn share-btn-ghost"
+        bindtap="onSaveTap"
+        disabled="{{!exportPath}}"
+        hover-class="share-btn-hover"
+      >保存图片</button>
+      <text class="share-dev-hint" wx:if="{{showDevHint}}">Mac 开发者工具可先保存图片，或使用右上角 ··· 转发</text>
+    </view>
+
+    <view class="share-dismiss" bindtap="onDismiss">完成</view>
+  </view>
+</view>

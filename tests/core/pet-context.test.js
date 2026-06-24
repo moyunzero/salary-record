@@ -60,6 +60,15 @@ const beforeWork = resolvePetContext('idle', at('08:00'), settings);
 assert.strictEqual(beforeWork.context, 'beforeWork');
 assert.strictEqual(beforeWork.escalation, 0);
 
+// offDuty: idle @ 15:00 weekday (not working)
+const offDuty = resolvePetContext('idle', at('15:00'), settings);
+assert.strictEqual(offDuty.context, 'offDuty');
+assert.strictEqual(offDuty.escalation, 0);
+
+// offDuty: idle after work hours
+const offDutyEvening = resolvePetContext('idle', at('20:00'), settings);
+assert.strictEqual(offDutyEvening.context, 'offDuty');
+
 // overtime L1: 30min past last end (18:30)
 const l1 = resolvePetContext('working', at('18:30'), settings);
 assert.strictEqual(l1.context, 'overtime');

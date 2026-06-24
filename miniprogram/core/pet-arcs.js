@@ -10,7 +10,11 @@ const ARC_IDS = [
 ];
 
 function minutesFromDate(now) {
-  if (typeof now === 'number') return now;
+  if (typeof now === 'number') {
+    // Date.now() 毫秒时间戳，不能当作「当日分钟」。
+    if (now > 1e12) return minutesFromDate(new Date(now));
+    return now;
+  }
   const d = now instanceof Date ? now : new Date(now || Date.now());
   return d.getHours() * 60 + d.getMinutes();
 }

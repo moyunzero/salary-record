@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "trend-chart": "/components/trend-chart/index",
+    "calendar-month": "/components/calendar-month/index"
+  }
+}

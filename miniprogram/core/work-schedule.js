@@ -104,10 +104,71 @@ function getLastWorkBlockEnd(schedule, nightShiftEnabled) {
   return parseTimeToMinutes(endTime);
 }
 
+/**
+ * 不计薪的休息段定义。lunch 始终生效，eveningRest 仅夜班启用时生效。
+ * @type {Array<{ key: string, label: string, nightOnly: boolean }>}
+ */
+const REST_BLOCK_DEFS = [
+  { key: 'lunch', label: '午休', nightOnly: false },
+  { key: 'eveningRest', label: '晚休', nightOnly: true },
+];
+
+/**
+ * 解析出当日所有「不计薪」的休息窗口（以分钟为单位，含中文标签）。
+ * @param {object} schedule 作息表
+ * @param {boolean} nightShiftEnabled 是否启用夜班
+ * @returns {Array<{ start: number, end: number, label: string, key: string }>}
+ */
+function restWindows(schedule, nightShiftEnabled) {
+  if (!schedule) return [];
+  const windows = [];
+  for (const def of REST_BLOCK_DEFS) {
+    if (def.nightOnly && !nightShiftEnabled) continue;
+    const b = blockMinutes(schedule[def.key]);
+    if (b) windows.push({ start: b.start, end: b.end, label: def.label, key: def.key });
+  }
+  return windows;
+}
+
+/**
+ * 计算 [rangeStart, rangeEnd] 与休息窗口的重叠分钟数（用于从工时中扣除午休/晚休）。
+ * @param {number} rangeStart 起点（当日分钟）
+ * @param {number} rangeEnd 终点（当日分钟，可为小数）
+ * @param {Array<{ start: number, end: number }>} windows 休息窗口
+ * @returns {number} 重叠分钟数，恒 >= 0
+ */
+function restOverlapMinutes(rangeStart, rangeEnd, windows) {
+  if (!(rangeEnd > rangeStart) || !windows || !windows.length) return 0;
+  let total = 0;
+  for (const w of windows) {
+    const lo = Math.max(rangeStart, w.start);
+    const hi = Math.min(rangeEnd, w.end);
+    if (hi > lo) total += hi - lo;
+  }
+  return total;
+}
+
+/**
+ * 返回当前时刻所处的休息窗口；不在任何休息段内时返回 null。
+ * @param {number} minutes 当日分钟（可为小数）
+ * @param {Array<{ start: number, end: number, label: string, key: string }>} windows 休息窗口
+ * @returns {{ start: number, end: number, label: string, key: string } | null}
+ */
+function currentRestWindow(minutes, windows) {
+  if (!windows || !windows.length) return null;
+  for (const w of windows) {
+    if (minutes >= w.start && minutes < w.end) return w;
+  }
+  return null;
+}
+
 module.exports = {
   computeDailyWorkHours,
   validateWorkSchedule,
   resolveSegment,
   getLastWorkBlockEnd,
   defaultWorkSchedule,
+  restWindows,
+  restOverlapMinutes,
+  currentRestWindow,
 };

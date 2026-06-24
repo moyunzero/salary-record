@@ -1,0 +1,8 @@
+<view class="money-rain-overlay" wx:if="{{active && particles.length}}">
+  <view
+    wx:for="{{particles}}"
+    wx:key="id"
+    class="money-rain-particle {{item.type === 'yen' ? 'money-rain-yen tabular' : 'money-rain-coin'}}"
+    style="left: {{item.left}}%; animation-delay: {{item.delay}}ms; animation-duration: {{item.duration}}ms;"
+  >{{item.type === 'yen' ? '¥' : ''}}</view>
+</view>

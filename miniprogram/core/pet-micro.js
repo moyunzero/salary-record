@@ -87,6 +87,7 @@ function createPositionMemory() {
 }
 
 function createMicroSession() {
+  const { createRhythmState } = require('./pet-rhythm');
   return {
     tapTimes: [],
     excitedPatrolUntil: 0,
@@ -96,6 +97,7 @@ function createMicroSession() {
     microChainCategory: null,
     energyBurstUntil: 0,
     nextEnergyRollAt: 0,
+    rhythm: createRhythmState(),
   };
 }
 
@@ -180,9 +182,9 @@ function resolveWalkTarget({ scene, habit, session, excited, rng, now }) {
   if (pm.lastIdleTx != null && pm.lastIdleTy != null && rng() < POSITION_MEMORY_WALK_PROB) {
     const jitter = () => (rng() * 2 - 1) * POSITION_JITTER;
     return {
-      tx: Math.max(0, Math.min(1, pm.lastIdleTx + jitter())),
-      ty: Math.max(0, Math.min(1, pm.lastIdleTy + jitter())),
-    };
+    tx: Math.max(0, Math.min(1, pm.lastIdleTx + jitter())),
+    ty: Math.max(0, Math.min(1, pm.lastIdleTy + jitter())),
+  };
   }
 
   const interestProb = excited ? INTEREST_EXCITED_PROB : INTEREST_BASELINE_PROB;

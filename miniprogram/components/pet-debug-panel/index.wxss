@@ -1,0 +1,176 @@
+.home-pet-edge {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.home-pet-edge-top {
+  border-top: 3rpx solid #facc15;
+  box-shadow: 0 0 12rpx rgba(250, 204, 21, 0.45);
+}
+
+.home-pet-edge-bottom {
+  bottom: 0;
+  border-bottom: 3rpx solid #facc15;
+  box-shadow: 0 0 12rpx rgba(250, 204, 21, 0.45);
+}
+
+.home-pet-edge-label {
+  position: absolute;
+  left: 0;
+  font-size: 20rpx;
+  line-height: 1.3;
+  color: #422006;
+  background: #facc15;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
+}
+
+.home-pet-edge-top .home-pet-edge-label {
+  top: 6rpx;
+}
+
+.home-pet-edge-bottom .home-pet-edge-label {
+  bottom: 6rpx;
+}
+
+.pet-debug-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12rpx 24rpx 16rpx;
+  box-sizing: border-box;
+  background: rgba(10, 16, 31, 0.98);
+  border-bottom: 1rpx solid rgba(34, 197, 94, 0.35);
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.45);
+}
+
+.pet-debug-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.pet-debug-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.pet-debug-close {
+  font-size: 24rpx;
+  color: #94a3b8;
+  padding: 8rpx 12rpx;
+}
+
+.pet-debug-status {
+  margin-bottom: 12rpx;
+  padding: 10rpx 14rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pet-debug-line {
+  display: block;
+  font-size: 22rpx;
+  color: #cbd5e1;
+  line-height: 1.5;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+
+.pet-debug-scroll-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pet-debug-scroll {
+  height: 100%;
+}
+
+.pet-debug-scroll-pad {
+  height: 24rpx;
+}
+
+.pet-debug-section {
+  display: block;
+  font-size: 22rpx;
+  color: #64748b;
+  margin: 4rpx 0 12rpx;
+}
+
+.pet-debug-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+
+.pet-debug-chips-clips {
+  margin-bottom: 8rpx;
+}
+
+.pet-debug-chip {
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.pet-debug-chip-sleep {
+  border-radius: 12rpx;
+  min-width: calc(50% - 6rpx);
+  box-sizing: border-box;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  min-height: 56rpx;
+}
+
+.pet-debug-chip-clip {
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  min-height: 56rpx;
+  line-height: 1.3;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pet-debug-chip-active {
+  color: #052e16;
+  background: #4ade80;
+  border-color: #4ade80;
+}
+
+.pet-debug-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.pet-debug-btn {
+  flex: 1;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 8rpx !important;
+  height: 64rpx !important;
+  line-height: 64rpx !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border: 1rpx solid rgba(34, 197, 94, 0.35) !important;
+  font-size: 22rpx !important;
+}

@@ -127,6 +127,117 @@
   line-height: 1;
 }
 
+/* 休息态（午休/晚休）：青色，传达「暂停而非异常」 */
+.ring-kicker-rest {
+  color: #5eead4;
+}
+
+.ring-metric-rest {
+  color: #2dd4bf;
+  font-size: 44rpx;
+}
+
+.ring-footnote-rest {
+  background: rgba(45, 212, 191, 0.1);
+  border-color: rgba(45, 212, 191, 0.22);
+}
+
+.ring-footnote-rest .ring-footnote-dot {
+  background: #2dd4bf;
+  box-shadow: 0 0 12rpx rgba(45, 212, 191, 0.6);
+}
+
+.ring-footnote-rest text {
+  color: #5eead4;
+}
+
+.home-hero-paused {
+  opacity: 0.62;
+}
+
+.home-rest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 14rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1rpx solid rgba(45, 212, 191, 0.26);
+  font-size: 22rpx;
+  color: #5eead4;
+}
+
+.home-rest-chip-icon {
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+/* 节假日/休息日上班：倍数加班费胶囊（暖金） */
+.home-rest-chip-premium {
+  background: rgba(251, 191, 36, 0.14);
+  border: 1rpx solid rgba(251, 191, 36, 0.32);
+  color: #fbbf24;
+}
+
+/* 休息日主视觉（替代收入大数字） */
+.home-rest-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  margin: 18rpx 0 4rpx;
+}
+
+.home-rest-hero-emoji {
+  font-size: 88rpx;
+  line-height: 1;
+}
+
+.home-rest-hero-text {
+  font-size: 28rpx;
+  color: #cbd5e1;
+}
+
+/* 加班计薪环（暖金） */
+.ring-kicker-premium {
+  color: #fcd34d;
+}
+
+.ring-metric-premium {
+  color: #fbbf24;
+}
+
+.ring-footnote-premium {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.24);
+}
+
+.ring-footnote-premium .ring-footnote-dot {
+  background: #fbbf24;
+  box-shadow: 0 0 12rpx rgba(251, 191, 36, 0.6);
+}
+
+.ring-footnote-premium text {
+  color: #fcd34d;
+}
+
+/* 休息日「今天要上班」按钮（暖金描边，区别于工作日绿色主按钮） */
+.home-cta-rest {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+.home-rest-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.06);
+  font-size: 24rpx;
+  color: #94a3b8;
+}
+
 .home-stats {
   display: flex;
   align-items: center;
@@ -165,9 +276,26 @@
   margin-top: 8rpx;
 }
 
-.home-pet-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 24rpx 0 16rpx;
+/* 上界锚点：紧跟收工按钮，margin-top = 10rpx 间距 */
+.home-pet-bound-top {
+  width: 100%;
+  height: 0;
+  margin-top: 10rpx;
+  pointer-events: none;
+}
+
+/* 猫猫活动区：上界 JS 测量；下界贴 Tab 栏顶，留 10rpx 间距 */
+.home-pet-dock {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.home-pet-dock cat-pet {
+  display: block;
+  width: 100%;
+  height: 100%;
   pointer-events: auto;
 }

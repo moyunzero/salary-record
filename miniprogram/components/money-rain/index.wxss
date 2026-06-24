@@ -1,0 +1,36 @@
+.money-rain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.money-rain-particle {
+  position: absolute;
+  top: -40rpx;
+  will-change: transform;
+  animation-name: money-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+.money-rain-coin {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde047, #eab308);
+}
+
+.money-rain-yen {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+@keyframes money-fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}

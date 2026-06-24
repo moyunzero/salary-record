@@ -12,20 +12,42 @@
           <view class="brand-hand"></view>
           <view class="brand-core"></view>
         </view>
-        <text class="page-title">今日工时</text>
+        <text class="page-title">今日搬砖</text>
       </view>
-      <text class="page-subtitle" wx:if="{{state === 'idle'}}">点击开始，记录今天的每一小时</text>
-      <text class="page-subtitle" wx:elif="{{state === 'working'}}">{{startTime}} 起 · {{inOvertime ? (devMockOvertime ? '今日份额已满 · 模拟' : '今日份额已满') : '实时更新中'}}</text>
-      <text class="page-subtitle" wx:else>{{startTime}} – {{endTime}} · 今日已收工</text>
+      <text class="page-subtitle" wx:if="{{state === 'idle'}}">点一下，开启今天的牛马生涯</text>
+      <text class="page-subtitle" wx:elif="{{state === 'working' && restMode}}">{{startTime}} 起 · {{restLabel}}中 · 老板暂停付钱</text>
+      <text class="page-subtitle" wx:elif="{{state === 'working'}}">{{startTime}} 起 · {{inOvertime ? (devMockOvertime ? '血汗已达标 · 模拟' : '血汗已达标 · 剩下都是白给') : '血汗实时到账中'}}</text>
+      <text class="page-subtitle" wx:else>{{startTime}} – {{endTime}} · 今天搬完了，跑路</text>
     </view>
 
     <view class="card home-card">
       <view class="home-hero">
-        <text class="home-hero-label">{{heroLabel}}</text>
-        <view class="preview-hero home-hero-amount">
-          <text class="preview-currency home-hero-currency">¥</text>
-          <text class="preview-value tabular {{amountSizeClass}} {{state === 'working' && !inOvertime ? 'earned-breathe' : ''}}">{{heroAmount}}</text>
-        </view>
+        <block wx:if="{{state === 'rest'}}">
+          <text class="home-hero-label">{{restDayKind === 'holiday' ? holidayName + ' · 法定节假日' : '周末 · 牛马也要喘口气'}}</text>
+          <view class="home-rest-hero">
+            <text class="home-rest-hero-emoji">{{restDayKind === 'holiday' ? '休' : '躺'}}</text>
+            <text class="home-rest-hero-text">今天躺平 · 月薪照拿，舒服</text>
+          </view>
+          <view class="home-rest-chip home-rest-chip-premium">
+            <text>真要搬砖，可计 {{premiumMultiplier}}× 工资</text>
+          </view>
+        </block>
+        <block wx:else>
+          <text class="home-hero-label">{{premiumMode ? '今日加班费 ×' + premiumMultiplier : heroLabel}}</text>
+          <view class="preview-hero home-hero-amount">
+            <text class="preview-currency home-hero-currency">¥</text>
+            <text class="preview-value tabular {{amountSizeClass}} {{state === 'working' && !inOvertime && !restMode && !premiumMode ? 'earned-breathe' : ''}} {{restMode ? 'home-hero-paused' : ''}}">{{heroAmount}}</text>
+          </view>
+          <view class="home-rest-chip" wx:if="{{premiumMode && compLeave}}">
+            <text>记了调休 · 今天白干</text>
+          </view>
+          <view class="home-rest-chip home-rest-chip-premium" wx:elif="{{premiumMode}}">
+            <text>×{{premiumMultiplier}} 加班费</text>
+          </view>
+          <view class="home-rest-chip" wx:elif="{{restMode}}">
+            <text>老板暂停付钱</text>
+          </view>
+        </block>
       </view>
 
       <view class="ring-wrap" bindlongpress="onToggleMockOvertime">
@@ -33,38 +55,70 @@
           <view class="ring-svg" style="{{ringSvgStyle}}"></view>
           <view class="ring-inner ring-inner-home">
             <block wx:if="{{state === 'idle'}}">
-              <text class="ring-kicker">工时</text>
+              <text class="ring-kicker">待命</text>
               <text class="ring-metric ring-metric-idle">—</text>
+            </block>
+            <block wx:elif="{{state === 'rest'}}">
+              <text class="ring-kicker ring-kicker-rest">{{restDayKind === 'holiday' ? '节假日' : '休息日'}}</text>
+              <text class="ring-metric ring-metric-rest">{{restDayKind === 'holiday' ? '休' : '躺'}}</text>
+            </block>
+            <block wx:elif="{{restMode}}">
+              <text class="ring-kicker ring-kicker-rest">{{restLabel}}</text>
+              <text class="ring-metric ring-metric-rest tabular">{{restCountdown}}</text>
+            </block>
+            <block wx:elif="{{premiumMode}}">
+              <text class="ring-kicker ring-kicker-premium">加班 ×{{premiumMultiplier}}</text>
+              <text class="ring-metric ring-metric-premium tabular">{{ringPct}}%</text>
             </block>
             <block wx:elif="{{inOvertime}}">
               <text class="ring-kicker ring-kicker-overtime">加班</text>
               <text class="ring-metric ring-metric-overtime tabular">{{overtimeDuration}}</text>
             </block>
             <block wx:else>
-              <text class="ring-kicker">进度</text>
+              <text class="ring-kicker">刑期</text>
               <text class="ring-metric tabular">{{ringPct}}%</text>
             </block>
           </view>
         </view>
-        <view class="ring-footnote" wx:if="{{inOvertime}}">
+        <view class="ring-footnote ring-footnote-rest" wx:if="{{restMode}}">
           <view class="ring-footnote-dot"></view>
-          <text>时薪稀释中</text>
+          <text>{{restEndsAt}} 恢复计薪</text>
+        </view>
+        <view class="ring-footnote ring-footnote-premium" wx:elif="{{premiumMode && !compLeave}}">
+          <view class="ring-footnote-dot"></view>
+          <text>{{premiumMultiplier}} 倍工资进账中</text>
+        </view>
+        <view class="ring-footnote" wx:elif="{{inOvertime}}">
+          <view class="ring-footnote-dot"></view>
+          <text>越搬越不值钱</text>
         </view>
       </view>
 
-      <view class="home-stats" wx:if="{{state !== 'idle'}}">
+      <view class="home-rest-note" wx:if="{{state === 'rest'}}">
+        <text>{{restDayKind === 'holiday' ? '节假日被喊上班？3 倍工资拿好，或调休换一天' : '休息日还想搬砖？2 倍工资拿好，或调休换一天'}}</text>
+      </view>
+      <view class="home-rest-note" wx:elif="{{premiumMode && compLeave}}">
+        <text>用今天的命换一天调休 · 今日白干（调休余额 +1）</text>
+      </view>
+      <view class="home-rest-note" wx:elif="{{premiumMode}}">
+        <text>{{restDayKind === 'holiday' ? '节假日加班' : '休息日加班'}}，工资按 {{premiumMultiplier}} 倍计，勉强值了</text>
+      </view>
+      <view class="home-rest-note" wx:elif="{{restMode}}">
+        <text>{{restLabel}}不计工时，月薪一分没少，安心摸</text>
+      </view>
+      <view class="home-stats" wx:elif="{{state !== 'idle'}}">
         <view class="home-stat">
           <text class="home-stat-label">有效时薪</text>
           <text class="home-stat-value tabular" style="color: {{hourlyColor}}">¥{{effectiveHourly}}</text>
         </view>
         <view class="home-stat-divider"></view>
         <view class="home-stat">
-          <text class="home-stat-label">稀释系数</text>
+          <text class="home-stat-label">贬值系数</text>
           <text class="home-stat-value tabular" style="color: {{hourlyColor}}">{{dilutionDisplay}}%</text>
         </view>
       </view>
       <view class="preview-meta home-meta" wx:else>
-        <text>开始上班后显示实时收入与稀释</text>
+        <text>开始搬砖后，实时围观血汗变成钱</text>
       </view>
     </view>
 
@@ -73,23 +127,30 @@
       class="btn-primary btn-block home-cta-btn"
       bindtap="onStartWork"
       hover-class="btn-hover"
-    >开始上班</button>
+    >开始搬砖</button>
+
+    <button
+      wx:elif="{{state === 'rest'}}"
+      class="btn-primary btn-block home-cta-btn home-cta-rest"
+      bindtap="onWorkOnRestDay"
+      hover-class="btn-hover"
+    >老板喊我加班</button>
 
     <button
       wx:elif="{{state === 'working'}}"
       class="btn-primary btn-block home-cta-btn"
       bindtap="onClockOut"
       hover-class="btn-hover"
-    >我已收工</button>
+    >今天不干了，跑路</button>
 
-    <button wx:else class="btn-primary btn-block btn-disabled home-cta-btn" disabled>今日已收工</button>
+    <button wx:else class="btn-primary btn-block btn-disabled home-cta-btn" disabled>今天搬完了</button>
     <view class="home-pet-bound-top"></view>
   </view>
 
   <view
     class="home-pet-dock"
-    style="top: {{petDockTop}}px;"
-    bindlongpress="onPetDebugToggle"
+    style="top: {{petDockTop}}px; bottom: {{petDockBottom}}px;"
+    bindlongpress="onPetDebugLongPress"
   >
     <cat-pet
       id="homeCat"
@@ -100,168 +161,35 @@
       lunch-start="{{petLunchStart}}"
       force-clip="{{petDebugForceClip}}"
       debug-done-band="{{petDebugDoneBand}}"
+      dock-height="{{petDockHeight}}"
       debug="{{petDebugEnabled && petDebugOpen}}"
       bind:debugchange="onPetDebugChange"
     />
   </view>
 
-  <block wx:if="{{petDebugEnabled && petDebugOpen}}">
-    <view class="home-pet-edge home-pet-edge-top" style="top: {{petDockTop}}px;">
-      <text class="home-pet-edge-label">上界 · 收工按钮下 10rpx</text>
-    </view>
-    <view class="home-pet-edge home-pet-edge-bottom">
-      <text class="home-pet-edge-label">下界 · 贴紧 Tab 栏</text>
-    </view>
-  </block>
-
-  <view
-    class="pet-debug-panel"
-    wx:if="{{petDebugEnabled && petDebugOpen}}"
-    style="top: {{statusBarHeight}}px; bottom: {{petDebugPanelBottom}}px;"
-    catchtouchmove="noop"
-  >
-    <view class="pet-debug-header">
-      <text class="pet-debug-title">猫动画调试</text>
-      <text class="pet-debug-close" bindtap="onPetDebugClose">关闭</text>
-    </view>
-
-    <view class="pet-debug-actions">
-      <button class="pet-debug-btn" size="mini" bindtap="onPetDebugTriggerRoam">触发漫游</button>
-      <button class="pet-debug-btn" size="mini" bindtap="onPetDebugSimulateTap">模拟点击</button>
-      <button class="pet-debug-btn" size="mini" bindtap="onPetDebugInjectPatrol">触发兴奋巡视</button>
-      <button class="pet-debug-btn" size="mini" bindtap="onPetDebugReset">恢复真实</button>
-    </view>
-
-    <view class="pet-debug-scroll-wrap">
-      <scroll-view class="pet-debug-scroll" scroll-y enhanced show-scrollbar>
-        <view class="pet-debug-status">
-          <text class="pet-debug-line">真实情境：{{petDebugLiveContext}} · L{{petDebugLiveEscalation}}</text>
-          <text class="pet-debug-line">当前播放：{{petDebugInfo.clip || '—'}} · 帧 {{petDebugInfo.frame + 1}}/{{petDebugInfo.frameCount || '?'}}</text>
-          <text class="pet-debug-line">活动区：上 {{petDockTop}}px · 高 {{petDockHeight}}px</text>
-          <text class="pet-debug-line">位置：x={{petDebugInfo.posX}} y={{petDebugInfo.posY}} · 舞台 {{petDebugInfo.stageWidth}}×{{petDebugInfo.stageHeight}}{{petDebugInfo.walking ? ' · ' + petDebugInfo.walkClip : ''}}</text>
-          <text class="pet-debug-line">漫游：{{petDebugInfo.canRoam ? '8向可' : '否'}}{{petDebugInfo.roamBlocked ? '（' + petDebugInfo.roamBlocked + '）' : ''}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugActive}}">覆盖中：{{petDebugScene}} · L{{petDebugEscalation}} · {{petDebugAppState}}{{petDebugForceClip ? ' · 强制 ' + petDebugForceClip : ''}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.habit}}">猫格：{{petDebugInfo.habit.affinity}} · {{petDebugInfo.habit.napCorner}} · 洗{{petDebugInfo.habit.groomer}} · 摸{{petDebugInfo.habit.touchiness}} · 今{{petDebugInfo.habit.dayMood}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.useMicroFsm}}">微行为：{{petDebugInfo.microBlockKind || '—'}}{{petDebugInfo.excitedPatrol ? ' · 兴奋巡视' : ''}}{{petDebugInfo.interestId ? ' · ' + petDebugInfo.interestId : ''}} · tap {{petDebugInfo.tapCount30s}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.useMicroFsm && petDebugInfo.doneBand}}">收工档：{{petDebugInfo.doneBand === 'done-night' ? '深夜' : '傍晚活跃'}}{{petDebugInfo.inSleep4Hold ? ' · sleep4 hold' : ''}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.useArcFsm}}">弧线：{{petDebugInfo.arcId || '—'}} · step {{petDebugInfo.arcStep}} · 睡级 {{petDebugInfo.sleepTier}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.useArcFsm && petDebugInfo.doneBand}}">收工档：{{petDebugInfo.doneBand === 'done-night' ? '深夜' : '傍晚活跃'}}</text>
-          <text class="pet-debug-line" wx:if="{{petDebugInfo.overlay}}">叠加层 overlay 播放中</text>
-        </view>
-
-        <text class="pet-debug-section">情境预设（对照设计文档 §6）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugScenarios}}"
-            wx:key="id"
-            class="pet-debug-chip {{petDebugScenarioId === item.id ? 'pet-debug-chip-active' : ''}}"
-            data-id="{{item.id}}"
-            bindtap="onPetDebugSelectScenario"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">SLEEP（8 个 · 各 2 帧）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugSleepClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">MEOW（4 个 · 各 3 帧）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugMeowClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">YAWN（4 个 · 各 8 帧）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugYawnClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">WASH（3 个）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugWashClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">SCRATCH / ITCH（2 个）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugScratchClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">HISS（2 个）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugHissClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">IDLE（2 个 · 33/35 · 34/36）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugIdleClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">PAW ATTACK（8 个）</text>
-        <view class="pet-debug-chips">
-          <view
-            wx:for="{{petDebugPawClips}}"
-            wx:key="clip"
-            class="pet-debug-chip pet-debug-chip-sleep {{petDebugForceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item.clip}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item.label}}</view>
-        </view>
-
-        <text class="pet-debug-section">全部 clip（{{petDebugClips.length}} 个）</text>
-        <view class="pet-debug-chips pet-debug-chips-clips">
-          <view
-            wx:for="{{petDebugClips}}"
-            wx:key="*this"
-            class="pet-debug-chip pet-debug-chip-clip {{petDebugForceClip === item ? 'pet-debug-chip-active' : ''}}"
-            data-clip="{{item}}"
-            bindtap="onPetDebugSelectClip"
-          >{{item}}</view>
-        </view>
-        <view class="pet-debug-scroll-pad"></view>
-      </scroll-view>
-    </view>
-  </view>
+  <pet-debug-panel
+    id="petDebugPanel"
+    enabled="{{petDebugEnabled}}"
+    open="{{petDebugOpen}}"
+    status-bar-height="{{statusBarHeight}}"
+    panel-bottom="{{petDebugPanelBottom}}"
+    pet-dock-top="{{petDockTop}}"
+    pet-dock-height="{{petDockHeight}}"
+    pet-dock-bottom="{{petDockBottom}}"
+    live-context="{{petDebugLiveContext}}"
+    live-escalation="{{petDebugLiveEscalation}}"
+    debug-info="{{petDebugInfo}}"
+    active="{{petDebugActive}}"
+    scenario-id="{{petDebugScenarioId}}"
+    scene="{{petDebugScene}}"
+    escalation="{{petDebugEscalation}}"
+    app-state="{{petDebugAppState}}"
+    done-band="{{petDebugDoneBand}}"
+    force-clip="{{petDebugForceClip}}"
+    bind:openchange="onPetDebugOpenChange"
+    bind:override="onPetDebugOverride"
+    bind:action="onPetDebugAction"
+  />
 
   <money-rain active="{{showMoneyRain}}" bind:complete="onMoneyRainComplete" />
   <share-card

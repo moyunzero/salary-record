@@ -45,6 +45,7 @@ const WORK_PRESETS = [
     workDaysPerMonth: 21.75,
     workSchedule: cloneWorkSchedule(),
     nightShiftEnabled: false,
+    restSystem: 'double_rest',
   },
   {
     id: 'single_rest',
@@ -54,6 +55,7 @@ const WORK_PRESETS = [
     workDaysPerMonth: 26,
     workSchedule: cloneWorkSchedule(),
     nightShiftEnabled: false,
+    restSystem: 'single_rest',
   },
   {
     id: 'big_small_week',
@@ -63,6 +65,7 @@ const WORK_PRESETS = [
     workDaysPerMonth: 23,
     workSchedule: cloneWorkSchedule(),
     nightShiftEnabled: false,
+    restSystem: 'big_small_week',
   },
 ];
 

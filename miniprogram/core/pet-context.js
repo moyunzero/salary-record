@@ -86,13 +86,20 @@ function resolvePetContext(appState, now, settings, options = {}) {
   }
 
   const morningStart = schedule.morning && schedule.morning.start;
-  if (morningStart) {
-    if (nowMinutes < parseTimeToMinutes(morningStart)) {
-      return { context: 'beforeWork', escalation: 0 };
-    }
+  if (morningStart && nowMinutes < parseTimeToMinutes(morningStart)) {
+    return { context: 'beforeWork', escalation: 0 };
   }
 
-  return { context: 'beforeWork', escalation: 0 };
+  if (
+    segment === 'morning' ||
+    segment === 'afternoon' ||
+    segment === 'nightWork' ||
+    segment == null
+  ) {
+    return { context: 'offDuty', escalation: 0 };
+  }
+
+  return { context: 'offDuty', escalation: 0 };
 }
 
 module.exports = {

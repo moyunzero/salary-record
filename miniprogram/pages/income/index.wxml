@@ -1,0 +1,70 @@
+<view class="page-shell page-shell-sub">
+  <view class="ambient ambient-top"></view>
+  <view class="ambient ambient-side"></view>
+  <view class="grain"></view>
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <view class="sub-nav-bar">
+    <view class="sub-nav-back" bindtap="onBack">‹</view>
+    <text class="sub-nav-title">血汗趋势</text>
+  </view>
+
+  <view class="page-body">
+    <view class="page-header">
+      <text class="page-subtitle">看看你的血汗都喂给了谁</text>
+    </view>
+
+    <view class="card income-chart-card">
+      <view class="income-segment">
+        <view
+          class="income-segment-item {{chartMode === 'week' ? 'income-segment-active' : ''}}"
+          bindtap="onChartModeWeek"
+        >本周</view>
+        <view
+          class="income-segment-item {{chartMode === 'month' ? 'income-segment-active' : ''}}"
+          bindtap="onChartModeMonth"
+        >本月</view>
+      </view>
+
+      <trend-chart
+        wx:if="{{hasData}}"
+        chartData="{{chartData}}"
+      />
+
+      <view class="income-period-summary" wx:if="{{hasData}}">
+        <text class="income-summary-label">合计</text>
+        <text class="income-summary-value tabular">¥{{periodTotal}}</text>
+        <text class="income-summary-sep">·</text>
+        <text class="income-summary-label">日均</text>
+        <text class="income-summary-value tabular">¥{{periodAvg}}</text>
+      </view>
+
+      <view class="empty-state income-empty" wx:else>
+        <text class="empty-title">还没搬过砖</text>
+        <text class="empty-desc">收工或补录工时后，这里就有你的血汗曲线了</text>
+      </view>
+    </view>
+
+    <view class="card income-calendar-card">
+      <view class="calendar-header">
+        <view class="calendar-nav" bindtap="onPrevMonth">‹</view>
+        <text class="calendar-title tabular">{{calendarYear}}年{{calendarMonth}}月</text>
+        <view class="calendar-nav" bindtap="onNextMonth">›</view>
+      </view>
+      <calendar-month
+        year="{{calendarYear}}"
+        month="{{calendarMonth}}"
+        markedDates="{{markedDates}}"
+        holidays="{{holidays}}"
+        bind:daytap="onCalendarDayTap"
+      />
+      <view class="calendar-legend">
+        <view class="legend-item"><text class="legend-tag legend-tag-rest">休</text><text>法定节假日</text></view>
+        <view class="legend-item"><text class="legend-tag legend-tag-work">班</text><text>调休补班</text></view>
+        <view class="legend-item"><view class="legend-dot legend-dot-work"></view><text>工作日</text></view>
+        <view class="legend-item"><view class="legend-dot legend-dot-premium"></view><text>加班</text></view>
+        <view class="legend-item"><view class="legend-dot legend-dot-comp"></view><text>调休</text></view>
+      </view>
+    </view>
+  </view>
+</view>

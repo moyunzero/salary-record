@@ -1,0 +1,157 @@
+  <block wx:if="{{enabled && open}}">
+  <view class="home-pet-edge home-pet-edge-top" style="top: {{petDockTop}}px;">
+    <text class="home-pet-edge-label">上界 · 收工按钮下 10rpx</text>
+  </view>
+  <view class="home-pet-edge home-pet-edge-bottom" style="bottom: {{petDockBottom}}px;">
+    <text class="home-pet-edge-label">下界 · 贴紧 Tab 栏</text>
+  </view>
+</block>
+
+<view
+  class="pet-debug-panel"
+  wx:if="{{enabled && open}}"
+  style="top: {{statusBarHeight}}px; bottom: {{panelBottom}}px;"
+  catchtouchmove="noop"
+>
+  <view class="pet-debug-header">
+    <text class="pet-debug-title">猫动画调试</text>
+    <text class="pet-debug-close" bindtap="onClose">关闭</text>
+  </view>
+
+  <view class="pet-debug-actions">
+    <button class="pet-debug-btn" size="mini" bindtap="onTriggerRoam">触发漫游</button>
+    <button class="pet-debug-btn" size="mini" bindtap="onSimulateTap">模拟点击</button>
+    <button class="pet-debug-btn" size="mini" bindtap="onInjectPatrol">触发兴奋巡视</button>
+    <button class="pet-debug-btn" size="mini" bindtap="onReset">恢复真实</button>
+  </view>
+
+  <view class="pet-debug-scroll-wrap">
+    <scroll-view class="pet-debug-scroll" scroll-y enhanced show-scrollbar>
+      <view class="pet-debug-status">
+        <text class="pet-debug-line">真实情境：{{liveContext}} · L{{liveEscalation}}</text>
+        <text class="pet-debug-line">当前播放：{{debugInfo.clip || '—'}} · 帧 {{debugInfo.frame + 1}}/{{debugInfo.frameCount || '?'}}</text>
+        <text class="pet-debug-line">活动区：上 {{petDockTop}}px · 高 {{petDockHeight}}px</text>
+        <text class="pet-debug-line">位置：x={{debugInfo.posX}} y={{debugInfo.posY}} · 舞台 {{debugInfo.stageWidth}}×{{debugInfo.stageHeight}}{{debugInfo.walking ? ' · ' + debugInfo.walkClip : ''}}</text>
+        <text class="pet-debug-line">漫游：{{debugInfo.canRoam ? '8向可' : '否'}}{{debugInfo.roamBlocked ? '（' + debugInfo.roamBlocked + '）' : ''}}</text>
+        <text class="pet-debug-line" wx:if="{{active}}">覆盖中：{{scene}} · L{{escalation}} · {{appState}}{{forceClip ? ' · 强制 ' + forceClip : ''}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.habit}}">猫格：{{debugInfo.habit.affinity}} · {{debugInfo.habit.napCorner}} · 洗{{debugInfo.habit.groomer}} · 摸{{debugInfo.habit.touchiness}} · 今{{debugInfo.habit.dayMood}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.useMicroFsm}}">微行为：{{debugInfo.microBlockKind || '—'}}{{debugInfo.excitedPatrol ? ' · 兴奋巡视' : ''}}{{debugInfo.interestId ? ' · ' + debugInfo.interestId : ''}} · tap {{debugInfo.tapCount30s}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.useMicroFsm && debugInfo.doneBand}}">收工档：{{debugInfo.doneBand === 'done-night' ? '深夜' : '傍晚活跃'}}{{debugInfo.inSleep4Hold ? ' · sleep4 hold' : ''}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.useArcFsm}}">弧线：{{debugInfo.arcId || '—'}} · step {{debugInfo.arcStep}} · 睡级 {{debugInfo.sleepTier}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.useArcFsm && debugInfo.doneBand}}">收工档：{{debugInfo.doneBand === 'done-night' ? '深夜' : '傍晚活跃'}}</text>
+        <text class="pet-debug-line" wx:if="{{debugInfo.overlay}}">叠加层 overlay 播放中</text>
+      </view>
+
+      <text class="pet-debug-section">情境预设（对照设计文档 §6）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{scenarios}}"
+          wx:key="id"
+          class="pet-debug-chip {{scenarioId === item.id ? 'pet-debug-chip-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectScenario"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">SLEEP（8 个 · 各 2 帧）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{sleepClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">MEOW（4 个 · 各 3 帧）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{meowClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">YAWN（4 个 · 各 8 帧）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{yawnClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">WASH（3 个）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{washClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">SCRATCH / ITCH（2 个）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{scratchClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">HISS（2 个）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{hissClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">IDLE（2 个 · 33/35 · 34/36）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{idleClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">PAW ATTACK（8 个）</text>
+      <view class="pet-debug-chips">
+        <view
+          wx:for="{{pawClips}}"
+          wx:key="clip"
+          class="pet-debug-chip pet-debug-chip-sleep {{forceClip === item.clip ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item.clip}}"
+          bindtap="onSelectClip"
+        >{{item.label}}</view>
+      </view>
+
+      <text class="pet-debug-section">全部 clip（{{allClips.length}} 个）</text>
+      <view class="pet-debug-chips pet-debug-chips-clips">
+        <view
+          wx:for="{{allClips}}"
+          wx:key="*this"
+          class="pet-debug-chip pet-debug-chip-clip {{forceClip === item ? 'pet-debug-chip-active' : ''}}"
+          data-clip="{{item}}"
+          bindtap="onSelectClip"
+        >{{item}}</view>
+      </view>
+      <view class="pet-debug-scroll-pad"></view>
+    </scroll-view>
+  </view>
+</view>

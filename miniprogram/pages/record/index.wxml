@@ -1,0 +1,80 @@
+<view class="page-shell page-shell-sub">
+  <view class="ambient ambient-top"></view>
+  <view class="ambient ambient-side"></view>
+  <view class="grain"></view>
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <view class="sub-nav-bar">
+    <view class="sub-nav-back" bindtap="onBack">‹</view>
+    <text class="sub-nav-title">搬砖记录</text>
+  </view>
+
+  <view class="page-body">
+    <view class="page-header">
+      <text class="page-subtitle">改改时间，看看这天搬出了多少血汗</text>
+    </view>
+
+    <view class="card record-card">
+      <view class="record-row">
+        <text class="record-label">日期</text>
+        <picker mode="date" value="{{date}}" bindchange="onDateChange">
+          <view class="record-picker tabular">{{date || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="record-row">
+        <text class="record-label">上工</text>
+        <picker mode="time" value="{{startTime}}" bindchange="onStartTimeChange">
+          <view class="record-picker tabular">{{startTime}}</view>
+        </picker>
+      </view>
+      <view class="record-row">
+        <text class="record-label">跑路</text>
+        <picker mode="time" value="{{endTime}}" bindchange="onEndTimeChange">
+          <view class="record-picker tabular">{{endTime}}</view>
+        </picker>
+      </view>
+      <view class="record-row" wx:if="{{isPremiumDay}}">
+        <text class="record-label">记为调休</text>
+        <switch checked="{{compLeave}}" bindchange="onToggleCompLeave" color="#22c55e" />
+      </view>
+    </view>
+
+    <view class="card record-preview-card">
+      <view class="record-day-badge {{dayType === 'statutory_holiday' ? 'record-day-badge-holiday' : (isPremiumDay ? 'record-day-badge-rest' : 'record-day-badge-makeup')}}" wx:if="{{dayBadge}}">
+        <text>{{dayBadge}}</text>
+      </view>
+      <text class="preview-label">{{isPremiumDay ? (compLeave ? '调休 · 今天白干' : '预估加班费') : '预估血汗'}}</text>
+      <view class="preview-hero record-preview-hero">
+        <text class="preview-currency">¥</text>
+        <text class="preview-value tabular {{isPremiumDay && !compLeave ? 'record-preview-premium' : ''}}">{{earned}}</text>
+      </view>
+      <view class="record-preview-note" wx:if="{{previewValid && isPremiumDay}}">
+        <text wx:if="{{compLeave}}">用今天的命换一天调休 · 当日白干</text>
+        <text wx:else>{{dayType === 'statutory_holiday' ? '节假日加班' : '休息日加班'}} · 工资按 {{premiumMultiplier}} 倍计</text>
+      </view>
+      <view class="home-stats record-preview-stats" wx:elif="{{previewValid}}">
+        <view class="home-stat">
+          <text class="home-stat-label">有效时薪</text>
+          <text class="home-stat-value tabular" style="color: {{hourlyColor}}">¥{{effectiveHourly}}</text>
+        </view>
+        <view class="home-stat-divider"></view>
+        <view class="home-stat">
+          <text class="home-stat-label">贬值系数</text>
+          <text class="home-stat-value tabular" style="color: {{hourlyColor}}">{{dilutionDisplay}}%</text>
+        </view>
+      </view>
+      <view class="record-footnote" wx:if="{{inOvertime && !isPremiumDay}}">
+        <view class="ring-footnote-dot"></view>
+        <text>血汗已达标 · 越搬越不值钱 · 白加 {{overtimeDuration}}</text>
+      </view>
+      <text class="record-hint" wx:if="{{!previewValid}}">跑路时间不能早于上工时间</text>
+    </view>
+
+    <button class="btn-primary btn-block" bindtap="onSave" hover-class="btn-hover">记下这笔血汗</button>
+    <button
+      wx:if="{{hasExisting}}"
+      class="btn-ghost btn-block record-delete-btn"
+      bindtap="onDelete"
+    >删掉这天</button>
+  </view>
+</view>

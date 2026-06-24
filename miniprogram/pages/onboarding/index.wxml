@@ -1,0 +1,155 @@
+<view class="page">
+  <view class="ambient ambient-top"></view>
+  <view class="ambient ambient-side"></view>
+  <view class="grain"></view>
+
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <view class="header">
+    <view class="header-brand">
+      <view class="brand-mark" aria-hidden="true">
+        <view class="brand-ring"></view>
+        <view class="brand-hand"></view>
+        <view class="brand-core"></view>
+      </view>
+      <view class="header-copy">
+        <text class="header-title">薪时宝</text>
+        <text class="header-slogan">每一分钟，都明码标价</text>
+      </view>
+    </view>
+
+    <view class="preview-card {{showPreview ? 'preview-visible' : ''}}">
+      <view class="preview-label">预估牛马时薪</view>
+      <view class="preview-hero" wx:if="{{showPreview}}">
+        <text class="preview-currency">¥</text>
+        <text class="preview-value tabular">{{previewHourly}}</text>
+        <text class="preview-unit">/时</text>
+      </view>
+      <view class="preview-placeholder" wx:else>输入月薪，看看你这条牛马值多少</view>
+      <view class="preview-meta" wx:if="{{showPreview}}">
+        <text>到手月薪 ¥{{previewNetMonthly}}</text>
+        <text class="preview-dot">·</text>
+        <text>{{previewMonthlyHours}} 标准工时/月</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="content">
+    <view class="section card card-salary">
+      <view class="section-head">
+        <view class="section-badge">01</view>
+        <view>
+          <view class="section-label">税前月薪</view>
+          <view class="title">卖身价，谈好了多少？</view>
+        </view>
+      </view>
+      <view class="input-wrap">
+        <text class="input-prefix tabular">¥</text>
+        <input
+          class="input-hero tabular"
+          type="digit"
+          placeholder="15,000"
+          placeholder-class="input-placeholder"
+          value="{{monthlySalary}}"
+          bindinput="onSalaryInput"
+        />
+      </view>
+    </view>
+
+    <view class="section card">
+      <view class="section-head">
+        <view class="section-badge">02</view>
+        <view>
+          <view class="section-label">五险一金</view>
+          <view class="title">个人缴纳比例</view>
+        </view>
+      </view>
+      <view class="hint">先扣一笔你看不见的钱，各地比例不同，以当地社保为准</view>
+      <view class="preset-list">
+        <view
+          wx:for="{{insurancePresets}}"
+          wx:key="id"
+          class="preset-item {{selectedInsurancePreset === item.id ? 'preset-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectInsurancePreset"
+        >
+          <view class="preset-radio">
+            <view class="preset-radio-dot" wx:if="{{selectedInsurancePreset === item.id}}"></view>
+          </view>
+          <view class="preset-content">
+            <text class="preset-name">{{item.name}}</text>
+            <text class="preset-note">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="fine-tune-toggle" bindtap="toggleInsuranceFineTune">
+        <text>微调比例（可选）</text>
+        <text class="fine-tune-chevron {{insuranceFineTuneOpen ? 'open' : ''}}">›</text>
+      </view>
+      <view class="fine-tune-body" wx:if="{{insuranceFineTuneOpen}}">
+        <view class="slider-row">
+          <view class="slider-label"><text>养老</text><text class="tabular">{{insurancePercent.pension}}%</text></view>
+          <slider min="0" max="20" step="0.5" value="{{insurancePercent.pension}}" data-key="pension" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>医疗</text><text class="tabular">{{insurancePercent.medical}}%</text></view>
+          <slider min="0" max="10" step="0.5" value="{{insurancePercent.medical}}" data-key="medical" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>失业</text><text class="tabular">{{insurancePercent.unemployment}}%</text></view>
+          <slider min="0" max="5" step="0.1" value="{{insurancePercent.unemployment}}" data-key="unemployment" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>公积金</text><text class="tabular">{{insurancePercent.fund}}%</text></view>
+          <slider min="0" max="20" step="0.5" value="{{insurancePercent.fund}}" data-key="fund" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+      </view>
+    </view>
+
+    <view class="section card">
+      <view class="section-head">
+        <view class="section-badge">03</view>
+        <view>
+          <view class="section-label">标准工时</view>
+          <view class="title">你被安排的作息</view>
+        </view>
+      </view>
+      <view class="hint">劳动法写着每日不超过 8 小时（仅供参考，懂的都懂）</view>
+      <view class="preset-list">
+        <view
+          wx:for="{{workPresets}}"
+          wx:key="id"
+          class="preset-item {{selectedWorkPreset === item.id ? 'preset-active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectWorkPreset"
+        >
+          <view class="preset-radio">
+            <view class="preset-radio-dot" wx:if="{{selectedWorkPreset === item.id}}"></view>
+          </view>
+          <view class="preset-content">
+            <text class="preset-name">{{item.name}}</text>
+            <text class="preset-note">{{item.note}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="fine-tune-toggle" bindtap="toggleWorkFineTune">
+        <text>微调工时（可选）</text>
+        <text class="fine-tune-chevron {{workFineTuneOpen ? 'open' : ''}}">›</text>
+      </view>
+      <view class="fine-tune-body" wx:if="{{workFineTuneOpen}}">
+        <view class="slider-row">
+          <view class="slider-label"><text>每日标准工时</text><text class="tabular">{{standardHoursPerDay}} 小时</text></view>
+          <slider min="6" max="12" step="1" value="{{standardHoursPerDay}}" bindchanging="onStandardHours" bindchange="onStandardHours" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+        <view class="slider-row">
+          <view class="slider-label"><text>每月工作天数</text><text class="tabular">{{workDaysPerMonth}} 天</text></view>
+          <slider min="18" max="26" step="0.25" value="{{workDaysPerMonth}}" bindchanging="onWorkDays" bindchange="onWorkDays" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer" style="padding-bottom: {{safeBottom + 24}}px">
+    <button class="btn-primary {{canFinish ? '' : 'btn-disabled'}}" bindtap="onFinish" hover-class="btn-hover">开始上坟</button>
+  </view>
+</view>

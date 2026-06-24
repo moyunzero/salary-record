@@ -1,7 +1,26 @@
-<canvas
-  type="2d"
-  id="catCanvas"
-  class="cat-pet-canvas"
-  style="width: 64px; height: 64px;"
-  catchtap="onTap"
-></canvas>
+<view class="cat-pet-stage">
+  <view wx:if="{{debug}}" class="cat-pet-debug-layer">
+    <view class="cat-debug-arena"></view>
+    <view class="cat-debug-roam {{debugCanRoam ? 'cat-debug-roam-on' : 'cat-debug-roam-off'}}">
+      {{debugCanRoam ? '8向漫游' : '不可漫游'}}
+    </view>
+  </view>
+
+  <view
+    class="cat-pet-wrap"
+    style="transform: translate3d({{posX}}px, {{posY}}px, 0);"
+  >
+    <view class="cat-sprite-clip">
+      <image
+        class="cat-sprite-sheet"
+        src="/assets/cat-pet/cat1-sheet.png"
+        style="margin-left: {{spriteX}}px; margin-top: {{spriteY}}px; width: {{sheetW}}px; height: {{sheetH}}px;"
+      />
+    </view>
+    <view
+      class="cat-hit-layer"
+      hover-class="none"
+      catchtap="onCatTap"
+    />
+  </view>
+</view>

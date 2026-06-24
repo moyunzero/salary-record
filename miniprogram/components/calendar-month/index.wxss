@@ -1,0 +1,104 @@
+.calendar-month {
+  width: 100%;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8rpx;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-weekdays text {
+  text-align: center;
+  font-size: 22rpx;
+  color: #64748b;
+}
+
+.calendar-cell {
+  position: relative;
+  min-height: 96rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rpx;
+}
+
+.calendar-cell-empty {
+  pointer-events: none;
+}
+
+/* 今天：绿色描边高亮 */
+.calendar-cell-today {
+  border-radius: 18rpx;
+  background: rgba(34, 197, 94, 0.1);
+  box-shadow: inset 0 0 0 2rpx rgba(34, 197, 94, 0.55);
+}
+
+.calendar-day {
+  font-size: 28rpx;
+  color: #e2e8f0;
+}
+
+/* 法定节假日的日期数字标红 */
+.calendar-day-holiday {
+  color: #f87171;
+}
+
+/* 角标：休（节假日）/ 班（调休补班） */
+.calendar-tag {
+  position: absolute;
+  top: 8rpx;
+  right: 14rpx;
+  font-size: 18rpx;
+  line-height: 1;
+  padding: 2rpx 5rpx;
+  border-radius: 6rpx;
+}
+
+.calendar-tag-rest {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.16);
+}
+
+.calendar-tag-work {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+/* 节日名（小字） */
+.calendar-holiday-name {
+  font-size: 18rpx;
+  line-height: 1;
+  color: #f87171;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.calendar-dot {
+  position: absolute;
+  bottom: 12rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10rpx rgba(34, 197, 94, 0.5);
+}
+
+/* 节假日/休息日加班（暖金） */
+.calendar-dot-premium {
+  background: #fbbf24;
+  box-shadow: 0 0 10rpx rgba(251, 191, 36, 0.6);
+}
+
+/* 调休（静谧蓝） */
+.calendar-dot-comp {
+  background: #60a5fa;
+  box-shadow: 0 0 10rpx rgba(96, 165, 250, 0.6);
+}

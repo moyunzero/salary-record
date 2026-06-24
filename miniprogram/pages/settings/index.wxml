@@ -15,7 +15,7 @@
         <view class="section-badge">¥</view>
         <view>
           <view class="section-label">税前月薪</view>
-          <view class="title">调整你的月薪</view>
+          <view class="title">调整你的卖身价</view>
         </view>
       </view>
       <view class="input-wrap">
@@ -80,10 +80,10 @@
         <view class="section-badge">时</view>
         <view>
           <view class="section-label">标准工时</view>
-          <view class="title">你的工作制度</view>
+          <view class="title">你被安排的作息</view>
         </view>
       </view>
-      <view class="hint">劳动法：每日工作时间不超过 8 小时</view>
+      <view class="hint">劳动法写着每日不超过 8 小时（仅供参考，懂的都懂）</view>
       <view class="preset-list">
         <view
           wx:for="{{workPresets}}"
@@ -176,6 +176,50 @@
             </view>
           </view>
         </block>
+        <view class="sync-row schedule-night-row">
+          <text>工作日到点自动上工</text>
+          <switch checked="{{autoStartEnabled}}" bindchange="onToggleAutoStart" color="#22c55e" />
+        </view>
+        <view class="weekday-block" wx:if="{{autoStartEnabled}}">
+          <view class="weekday-head">
+            <text class="schedule-label">每周工作日</text>
+            <text class="weekday-auto-tag">按工作制自动</text>
+          </view>
+          <view class="week-strip">
+            <view
+              wx:for="{{weekdayChips}}"
+              wx:key="day"
+              class="week-cell week-cell-{{item.status}}"
+            >{{item.label}}</view>
+          </view>
+        </view>
+        <view class="weekday-block" wx:if="{{autoStartEnabled && isBigSmall}}">
+          <text class="schedule-label">本周是</text>
+          <view class="bigsmall-toggle">
+            <view
+              class="bigsmall-chip {{bigSmall.anchorType === 'big' ? 'bigsmall-chip-active' : ''}}"
+              data-type="big"
+              bindtap="onSelectBigSmallType"
+            >大周 · 含周六</view>
+            <view
+              class="bigsmall-chip {{bigSmall.anchorType === 'small' ? 'bigsmall-chip-active' : ''}}"
+              data-type="small"
+              bindtap="onSelectBigSmallType"
+            >小周 · 周六休</view>
+          </view>
+          <text class="weekday-hint">周一~五固定上班，周六大小周交替</text>
+        </view>
+        <view class="sync-row schedule-night-row">
+          <text>法定节假日自动躺平</text>
+          <switch checked="{{holidayAutoRest}}" bindchange="onToggleHolidayAutoRest" color="#22c55e" />
+        </view>
+        <view class="weekday-hint">
+          <text>节假日默认不计薪；硬要上班可选 3 倍工资或调休</text>
+        </view>
+        <view class="sync-row schedule-night-row" wx:if="{{compLeaveBalance > 0}}">
+          <text>调休余额</text>
+          <text class="schedule-computed-value tabular">{{compLeaveBalance}} 天</text>
+        </view>
         <view class="slider-row">
           <view class="slider-label"><text>每月工作天数</text><text class="tabular">{{workDaysPerMonth}} 天</text></view>
           <slider min="18" max="26" step="0.25" value="{{workDaysPerMonth}}" bindchanging="onWorkDays" bindchange="onWorkDays" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
@@ -201,6 +245,6 @@
       <view class="sync-logout" wx:if="{{cloudSyncEnabled}}" bindtap="onLogoutCloud">退出登录</view>
     </view>
 
-    <button class="btn-primary btn-block {{canSave ? '' : 'btn-disabled'}}" bindtap="onSave" hover-class="btn-hover">保存设置</button>
+    <button class="btn-primary btn-block {{canSave ? '' : 'btn-disabled'}}" bindtap="onSave" hover-class="btn-hover">就这么定了</button>
   </view>
 </view>

@@ -1,0 +1,22 @@
+<view class="calendar-month">
+  <view class="calendar-weekdays">
+    <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+  </view>
+  <view class="calendar-grid">
+    <view
+      class="calendar-cell {{item.empty ? 'calendar-cell-empty' : ''}} {{item.isToday ? 'calendar-cell-today' : ''}}"
+      wx:for="{{cells}}"
+      wx:key="date"
+      data-date="{{item.date}}"
+      bindtap="onDayTap"
+    >
+      <block wx:if="{{!item.empty}}">
+        <text wx:if="{{item.tag === '休'}}" class="calendar-tag calendar-tag-rest">休</text>
+        <text wx:elif="{{item.tag === '班'}}" class="calendar-tag calendar-tag-work">班</text>
+        <text class="calendar-day tabular {{item.isHoliday ? 'calendar-day-holiday' : ''}}">{{item.day}}</text>
+        <text wx:if="{{item.holidayName}}" class="calendar-holiday-name">{{item.holidayName}}</text>
+      </block>
+      <view wx:if="{{item.marked}}" class="calendar-dot calendar-dot-{{item.markKind}}"></view>
+    </view>
+  </view>
+</view>

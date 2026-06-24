@@ -1,0 +1,9 @@
+{
+  "name": "getHolidays",
+  "version": "1.0.0",
+  "description": "中国法定节假日数据代理（归一化 holiday-calendar）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0"
+  }
+}

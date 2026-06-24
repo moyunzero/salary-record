@@ -33,6 +33,14 @@ Page({
     workDaysPerMonth: 21.75,
     workSchedule: defaultWorkSchedule(),
     nightShiftEnabled: false,
+    autoStartEnabled: true,
+    workWeekdays: [1, 2, 3, 4, 5],
+    weekdayChips: [],
+    restSystem: 'double_rest',
+    isBigSmall: false,
+    bigSmall: { anchorWeekDate: '', anchorType: 'big' },
+    holidayAutoRest: true,
+    compLeaveBalance: 0,
     computedStandardHours: 8,
     insurancePercent: {
       pension: 8,
@@ -133,16 +141,60 @@ Page({
     });
   },
 
+  buildWeekdayChips(restSystem) {
+    const labels = ['日', '一', '二', '三', '四', '五', '六'];
+    const work = this.deriveWorkWeekdays(restSystem);
+    return labels.map((label, day) => {
+      let status = work.includes(day) ? 'work' : 'rest';
+      if (restSystem === 'big_small_week' && day === 6) status = 'alt'; // 周六大小周交替
+      return { day, label, status };
+    });
+  },
+
+  // 由工作制推导每周工作日（仅用于展示；大小周周六交替单独处理）
+  deriveWorkWeekdays(restSystem) {
+    if (restSystem === 'single_rest') return [1, 2, 3, 4, 5, 6];
+    if (restSystem === 'big_small_week') return [1, 2, 3, 4, 5, 6];
+    return [1, 2, 3, 4, 5];
+  },
+
+  mondayStr(now = new Date()) {
+    const dow = now.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow;
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${monday.getFullYear()}-${p(monday.getMonth() + 1)}-${p(monday.getDate())}`;
+  },
+
   onLoad() {
     const s = getSettings();
     const workSchedule = s.workSchedule || defaultWorkSchedule(s.workStartTime);
     const nightShiftEnabled = !!s.nightShiftEnabled;
+    const restSystem = s.restSystem || 'double_rest';
+    const workWeekdays = this.deriveWorkWeekdays(restSystem);
+    const presetByRest = {
+      double_rest: 'legal_double_rest',
+      single_rest: 'single_rest',
+      big_small_week: 'big_small_week',
+    };
+    const bigSmall = s.bigSmall && typeof s.bigSmall === 'object'
+      ? { anchorWeekDate: s.bigSmall.anchorWeekDate || '', anchorType: s.bigSmall.anchorType === 'small' ? 'small' : 'big' }
+      : { anchorWeekDate: '', anchorType: 'big' };
     this.setData({
       monthlySalary: String(s.monthlySalary || ''),
       standardHoursPerDay: s.standardHoursPerDay,
       workDaysPerMonth: s.workDaysPerMonth,
       workSchedule,
       nightShiftEnabled,
+      autoStartEnabled: s.autoStartEnabled !== false,
+      restSystem,
+      isBigSmall: restSystem === 'big_small_week',
+      bigSmall,
+      holidayAutoRest: s.holidayAutoRest !== false,
+      compLeaveBalance: Number(s.compLeaveBalance) || 0,
+      workWeekdays,
+      weekdayChips: this.buildWeekdayChips(restSystem),
+      selectedWorkPreset: presetByRest[restSystem] || 'custom',
       insurance: s.insurance,
       insurancePercent: {
         pension: roundPercent((s.insurance.pension || 0) * 100, 1),
@@ -151,7 +203,6 @@ Page({
         fund: roundPercent((s.insurance.fund || 0) * 100, 1),
       },
       selectedInsurancePreset: 'custom',
-      selectedWorkPreset: 'custom',
     });
     this.recomputeComputedHours();
     this.updateCanSave();
@@ -223,6 +274,22 @@ Page({
     );
   },
 
+  onToggleAutoStart(e) {
+    this.setData({ autoStartEnabled: e.detail.value });
+  },
+
+  onToggleHolidayAutoRest(e) {
+    this.setData({ holidayAutoRest: e.detail.value });
+  },
+
+  // 大小周：标记本周为大周或小周（锚定到本周一）
+  onSelectBigSmallType(e) {
+    const anchorType = e.currentTarget.dataset.type === 'small' ? 'small' : 'big';
+    this.setData({
+      bigSmall: { anchorWeekDate: this.mondayStr(), anchorType },
+    });
+  },
+
   updateCanSave() {
     const salary = Number(this.data.monthlySalary);
     this.setData({ canSave: salary > 0 });
@@ -246,11 +313,21 @@ Page({
     const id = e.currentTarget.dataset.id;
     const preset = WORK_PRESETS.find((p) => p.id === id);
     if (!preset) return;
+    const restSystem = preset.restSystem || 'double_rest';
+    const workWeekdays = this.deriveWorkWeekdays(restSystem);
     const updates = {
       selectedWorkPreset: id,
       standardHoursPerDay: preset.standardHoursPerDay,
       workDaysPerMonth: preset.workDaysPerMonth,
+      restSystem,
+      isBigSmall: restSystem === 'big_small_week',
+      workWeekdays,
+      weekdayChips: this.buildWeekdayChips(restSystem),
     };
+    // 切到大小周且尚未设置锚点 → 默认本周为大周
+    if (restSystem === 'big_small_week' && !this.data.bigSmall.anchorWeekDate) {
+      updates.bigSmall = { anchorWeekDate: this.mondayStr(), anchorType: 'big' };
+    }
     if (preset.workSchedule) {
       updates.workSchedule = JSON.parse(JSON.stringify(preset.workSchedule));
       if (preset.nightShiftEnabled !== undefined) {
@@ -304,7 +381,7 @@ Page({
   onSave() {
     const salary = Number(this.data.monthlySalary);
     if (!salary || salary <= 0) {
-      wx.showToast({ title: '请输入有效月薪', icon: 'none' });
+      wx.showToast({ title: '月薪填一个，总不能白卖命', icon: 'none' });
       return;
     }
     const scheduleResult = validateWorkSchedule(this.data.workSchedule, this.data.nightShiftEnabled);
@@ -325,10 +402,15 @@ Page({
         insurance: this.data.insurance,
         workSchedule: this.data.workSchedule,
         nightShiftEnabled: this.data.nightShiftEnabled,
+        workWeekdays: this.data.workWeekdays,
+        autoStartEnabled: this.data.autoStartEnabled,
+        restSystem: this.data.restSystem,
+        bigSmall: this.data.bigSmall,
+        holidayAutoRest: this.data.holidayAutoRest,
       },
       { skipSchedule: cloudOn }
     );
-    wx.showToast({ title: '已保存', icon: 'success' });
+    wx.showToast({ title: '行，就这么搬', icon: 'success' });
     if (cloudOn) {
       const { syncNow } = require('../../services/sync');
       syncNow().finally(() => this.refreshCloudSyncUI());

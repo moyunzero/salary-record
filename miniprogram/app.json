@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/onboarding/index",
+    "pages/profile/index",
+    "pages/settings/index",
+    "pages/record/index",
+    "pages/income/index"
+  ],
+  "window": {
+    "backgroundColor": "#0a101f",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0a101f",
+    "navigationBarTitleText": "薪时宝",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#94a3b8",
+    "selectedColor": "#22c55e",
+    "backgroundColor": "#0a101f",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/icons/tab-home.png",
+        "selectedIconPath": "assets/icons/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我",
+        "iconPath": "assets/icons/tab-profile.png",
+        "selectedIconPath": "assets/icons/tab-profile-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -4,6 +4,7 @@ const {
   findUnfinishedPriorRecord,
   closeRecordAt,
   startWork,
+  autoStartWorkIfDue,
   clockOut,
   buildHomeView,
   isDevMockOvertime,
@@ -13,105 +14,12 @@ const {
   todayStr,
 } = require('../../services/clock');
 const { vibrateShort } = require('../../services/platform');
+const { getHolidayMapForYears } = require('../../services/holidays');
 const { resolvePetContext } = require('../../core/pet-context');
 const { defaultWorkSchedule } = require('../../core/work-schedule');
 const { CROSS_DAY_DEFER_KEY } = require('../../constants/storage-keys');
-const CAT_ATLAS = require('../../assets/cat-pet/cat1-atlas-data.js');
-
-const PET_DEBUG_SCENARIOS = [
-  { id: 'beforeWork', label: '上班前', scene: 'beforeWork', escalation: 0, appState: 'idle' },
-  { id: 'offDuty', label: '闲暇', scene: 'offDuty', escalation: 0, appState: 'idle' },
-  { id: 'onShift', label: '上班中', scene: 'onShift', escalation: 0, appState: 'working' },
-  { id: 'lunch', label: '午休', scene: 'lunch', escalation: 0, appState: 'idle' },
-  { id: 'dinner', label: '晚休', scene: 'dinner', escalation: 0, appState: 'idle' },
-  { id: 'nightShift', label: '晚班', scene: 'nightShift', escalation: 0, appState: 'working' },
-  { id: 'otL1', label: '加班 L1', scene: 'overtime', escalation: 1, appState: 'working' },
-  { id: 'otL2', label: '加班 L2', scene: 'overtime', escalation: 2, appState: 'working' },
-  { id: 'otL3', label: '加班 L3', scene: 'overtime', escalation: 3, appState: 'working' },
-  { id: 'otL4', label: '加班 L4', scene: 'overtime', escalation: 4, appState: 'working' },
-  { id: 'doneActive', label: '收工·傍晚', scene: 'done', escalation: 0, appState: 'done', doneBand: 'done-active' },
-  { id: 'doneNight', label: '收工·深夜', scene: 'done', escalation: 0, appState: 'done', doneBand: 'done-night' },
-];
-
-const PET_DEBUG_SLEEP_CLIPS = [
-  { clip: 'sleep1_l', label: 'sleep1 · 左' },
-  { clip: 'sleep1_r', label: 'sleep1 · 右' },
-  { clip: 'sleep2_l', label: 'sleep2 · 左' },
-  { clip: 'sleep2_r', label: 'sleep2 · 右' },
-  { clip: 'sleep3_l', label: 'sleep3 · 左' },
-  { clip: 'sleep3_r', label: 'sleep3 · 右' },
-  { clip: 'sleep4_l', label: 'sleep4 · 左' },
-  { clip: 'sleep4_r', label: 'sleep4 · 右' },
-];
-
-const PET_DEBUG_MEOW_CLIPS = [
-  { clip: 'meow_sit', label: 'meow · 坐' },
-  { clip: 'meow_stand', label: 'meow · 站' },
-  { clip: 'meow_sit2', label: 'meow · 坐2' },
-  { clip: 'meow_lie', label: 'meow · 趴' },
-];
-
-const PET_DEBUG_YAWN_CLIPS = [
-  { clip: 'yawn_sit', label: 'yawn · 坐' },
-  { clip: 'yawn_stand', label: 'yawn · 站' },
-  { clip: 'yawn_sit2', label: 'yawn · 坐2' },
-  { clip: 'yawn_lie', label: 'yawn · 趴' },
-];
-
-const PET_DEBUG_WASH_CLIPS = [
-  { clip: 'wash_sit', label: 'wash · 坐（9帧）' },
-  { clip: 'wash_stand', label: 'wash · 站（9帧）' },
-  { clip: 'wash_lie', label: 'wash · 趴（7帧）' },
-];
-
-const PET_DEBUG_SCRATCH_CLIPS = [
-  { clip: 'scratch_l', label: 'scratch · 左（11帧）' },
-  { clip: 'scratch_r', label: 'scratch · 右（11帧）' },
-];
-
-const PET_DEBUG_HISS_CLIPS = [
-  { clip: 'hiss_l', label: 'hiss · 左（2帧）' },
-  { clip: 'hiss_r', label: 'hiss · 右（2帧）' },
-];
-
-const PET_DEBUG_IDLE_CLIPS = [
-  { clip: 'idle_a', label: 'idle · 33,35' },
-  { clip: 'idle_b', label: 'idle · 34,36' },
-];
-
-const PET_DEBUG_PAW_CLIPS = [
-  { clip: 'paw_attack_down', label: 'paw · 下（9帧）' },
-  { clip: 'paw_attack_up', label: 'paw · 上（5帧）' },
-  { clip: 'paw_attack_left', label: 'paw · 左（7帧）' },
-  { clip: 'paw_attack_right', label: 'paw · 右（7帧）' },
-  { clip: 'paw_attack_left_down', label: 'paw · 左下（9帧）' },
-  { clip: 'paw_attack_right_down', label: 'paw · 右下（9帧）' },
-  { clip: 'paw_attack_left_up', label: 'paw · 左上（5帧）' },
-  { clip: 'paw_attack_right_up', label: 'paw · 右上（5帧）' },
-];
-
-const PET_DEBUG_GROUPED_CLIP_IDS = new Set([
-  ...PET_DEBUG_SLEEP_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_MEOW_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_YAWN_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_WASH_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_SCRATCH_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_HISS_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_IDLE_CLIPS.map((item) => item.clip),
-  ...PET_DEBUG_PAW_CLIPS.map((item) => item.clip),
-]);
-
-const PET_DEBUG_CLIPS = Object.keys(CAT_ATLAS.clips || {})
-  .filter((key) => !PET_DEBUG_GROUPED_CLIP_IDS.has(key))
-  .sort();
-
-function isDevelopEnv() {
-  try {
-    return wx.getAccountInfoSync().miniProgram.envVersion === 'develop';
-  } catch (e) {
-    return false;
-  }
-}
+const { isDevelopEnv } = require('../../utils/env');
+const { petDockBottomGapPx } = require('../../utils/layout');
 
 function hexToRgba(hex, alpha) {
   const h = hex.replace('#', '');
@@ -126,9 +34,10 @@ function amountSizeClass(value) {
 }
 
 function heroLabelFor(state) {
-  if (state === 'working') return '今日已赚';
-  if (state === 'done') return '今日收入';
-  return '基础时薪';
+  if (state === 'working') return '今日血汗';
+  if (state === 'done') return '今日血汗';
+  if (state === 'rest') return '今天躺平';
+  return '牛马时薪';
 }
 
 function buildRingSvgStyle(pct, color) {
@@ -178,6 +87,16 @@ Page({
     heroAmount: '0.00',
     amountSizeClass: 'home-amount-lg',
     inOvertime: false,
+    restMode: false,
+    restLabel: '',
+    restEndsAt: '',
+    restCountdown: '',
+    dayType: 'workday',
+    premiumMultiplier: 1,
+    premiumMode: false,
+    compLeave: false,
+    holidayName: '',
+    restDayKind: 'weekend',
     devMockOvertime: false,
     showMoneyRain: false,
     showShareSheet: false,
@@ -196,38 +115,23 @@ Page({
     petDebugDoneBand: '',
     petDebugForceClip: '',
     petDebugScenarioId: '',
-    petDebugInfo: {
-      clip: '',
-      frame: 0,
-      frameCount: 0,
-      overlay: false,
-      scene: '',
-      escalation: 0,
-      appState: 'idle',
-      forced: false,
-    },
-    petDebugScenarios: PET_DEBUG_SCENARIOS,
-    petDebugSleepClips: PET_DEBUG_SLEEP_CLIPS,
-    petDebugMeowClips: PET_DEBUG_MEOW_CLIPS,
-    petDebugYawnClips: PET_DEBUG_YAWN_CLIPS,
-    petDebugWashClips: PET_DEBUG_WASH_CLIPS,
-    petDebugScratchClips: PET_DEBUG_SCRATCH_CLIPS,
-    petDebugHissClips: PET_DEBUG_HISS_CLIPS,
-    petDebugIdleClips: PET_DEBUG_IDLE_CLIPS,
-    petDebugPawClips: PET_DEBUG_PAW_CLIPS,
-    petDebugClips: PET_DEBUG_CLIPS,
+    petDebugInfo: {},
     petDebugLiveContext: 'beforeWork',
     petDebugLiveEscalation: 0,
     petDebugEnabled: false,
     petDockTop: 400,
     petDockHeight: 0,
+    petDockBottom: 5,
     petDebugPanelBottom: 200,
   },
 
   _timer: null,
   _redirecting: false,
+  _restMode: null,
   _petDockTop: 0,
   _petDockHeight: 0,
+  _petDockWidth: 0,
+  _petDockBottom: 0,
 
   onLoad() {
     if (!isOnboardingDone()) {
@@ -246,6 +150,7 @@ Page({
       this.setData({ showShareSheet: true });
     }
     this.handleCrossDay().then(() => {
+      autoStartWorkIfDue();
       this.refresh();
       wx.nextTick(() => this.measurePetDock());
       this._timer = setInterval(() => this.refresh(), 1000);
@@ -263,23 +168,47 @@ Page({
     this.createSelectorQuery()
       .select('.home-pet-bound-top')
       .boundingClientRect()
+      .select('.home-pet-dock')
+      .boundingClientRect()
       .exec((res) => {
         const topAnchor = res && res[0];
+        const dockRect = res && res[1];
         if (!topAnchor || topAnchor.top <= 0) return;
 
         const top = topAnchor.top;
-        const height = Math.round(win.windowHeight - top);
-        const panelBottom = Math.max(72, Math.round(win.windowHeight - top + 8));
+        const dockBottom = petDockBottomGapPx(win);
+        const height = Math.round(win.windowHeight - top - dockBottom);
+        const panelBottom = Math.max(72, Math.round(win.windowHeight - top - dockBottom + 8));
+        const dockW = dockRect && dockRect.width > 0 ? Math.round(dockRect.width) : 0;
+        const dockH = height > 0 ? height : 0;
 
-        if (this._petDockTop === top && this._petDockHeight === height) return;
+        if (
+          this._petDockTop === top &&
+          this._petDockHeight === height &&
+          this._petDockWidth === dockW &&
+          this._petDockBottom === dockBottom
+        ) {
+          return;
+        }
         if (height < 72) return;
 
         this._petDockTop = top;
         this._petDockHeight = height;
-        this.setData({ petDockTop: top, petDockHeight: height, petDebugPanelBottom: panelBottom });
+        this._petDockWidth = dockW;
+        this._petDockBottom = dockBottom;
+        this.setData({
+          petDockTop: top,
+          petDockHeight: height,
+          petDockBottom: dockBottom,
+          petDebugPanelBottom: panelBottom,
+        });
         wx.nextTick(() => {
           const cat = this.selectComponent('#homeCat');
-          if (cat && cat.measureStage) cat.measureStage();
+          if (cat && cat.setStageSize) {
+            cat.setStageSize(dockW || 0, dockH);
+          } else if (cat && cat.measureStage) {
+            cat.measureStage();
+          }
         });
       });
   },
@@ -296,10 +225,10 @@ Page({
         return;
       }
       wx.showModal({
-        title: '昨日未收工',
-        content: '是否在 23:59 自动收工并结算昨日工时？',
-        confirmText: '自动收工',
-        cancelText: '稍后处理',
+        title: '昨天忘了跑路',
+        content: '昨天没点收工，要按 23:59 帮你结算那天的血汗吗？',
+        confirmText: '帮我收工',
+        cancelText: '稍后再说',
         success: (res) => {
           if (res.confirm) {
             wx.removeStorageSync(CROSS_DAY_DEFER_KEY);
@@ -336,7 +265,7 @@ Page({
     if (devMockOvertime && record && !record.endTime) {
       now = computeMockOvertimeNow();
     }
-    const view = buildHomeView(settings, record, now);
+    const view = buildHomeView(settings, record, now, this.getHolidayMap(now));
     const pet = resolvePetContext(view.state, now, settings);
     const schedule = settings.workSchedule || defaultWorkSchedule(settings.workStartTime);
     const displayPet = this.data.petDebugActive
@@ -366,6 +295,15 @@ Page({
       petDebugLiveContext: pet.context,
       petDebugLiveEscalation: pet.escalation,
     };
+    if (this._restMode !== null && this._restMode !== next.restMode) {
+      wx.showToast({
+        title: next.restMode
+          ? `${next.restLabel}到，放下砖头，月薪照拿`
+          : '摸鱼结束，继续当牛马',
+        icon: 'none',
+      });
+    }
+    this._restMode = next.restMode;
     const keys = Object.keys(next);
     let changed = false;
     for (let i = 0; i < keys.length; i += 1) {
@@ -380,10 +318,10 @@ Page({
   },
 
   onToggleMockOvertime() {
-    if (wx.getAccountInfoSync().miniProgram.envVersion !== 'develop') return;
+    if (!isDevelopEnv()) return;
     const record = getTodayRecord();
     if (!record || record.endTime) {
-      wx.showToast({ title: '请先开始上班', icon: 'none' });
+      wx.showToast({ title: '请先开始搬砖', icon: 'none' });
       return;
     }
     const on = toggleDevMockOvertime();
@@ -392,92 +330,62 @@ Page({
   },
 
   onDevSeedCrossDay() {
-    if (wx.getAccountInfoSync().miniProgram.envVersion !== 'develop') return;
+    if (!isDevelopEnv()) return;
     seedDevCrossDayRecord();
     wx.showToast({ title: '已注入昨日未收工', icon: 'none' });
     this.handleCrossDay().then(() => this.refresh());
   },
 
-  onPetDebugToggle() {
-    if (!isDevelopEnv()) return;
-    const open = !this.data.petDebugOpen;
+  onPetDebugLongPress() {
+    if (!this.data.petDebugEnabled) return;
+    const panel = this.selectComponent('#petDebugPanel');
+    if (panel && panel.toggle) panel.toggle();
+  },
+
+  onPetDebugOpenChange(e) {
+    const open = !!(e.detail && e.detail.open);
     this.setData({ petDebugOpen: open }, () => {
       if (open) wx.nextTick(() => this.measurePetDock());
     });
   },
 
-  noop() {},
-
-  onPetDebugClose() {
-    this.setData({ petDebugOpen: false });
-  },
-
-  onPetDebugSelectScenario(e) {
-    const { id } = e.currentTarget.dataset;
-    const scenario = PET_DEBUG_SCENARIOS.find((s) => s.id === id);
-    if (!scenario) return;
-
-    this.setData({
-      petDebugActive: true,
-      petDebugOpen: true,
-      petDebugScenarioId: scenario.id,
-      petDebugScene: scenario.scene,
-      petDebugEscalation: scenario.escalation,
-      petDebugAppState: scenario.appState,
-      petDebugDoneBand: scenario.doneBand || '',
-      petDebugForceClip: '',
-    });
-    this.refresh();
-    wx.nextTick(() => {
-      const cat = this.selectComponent('#homeCat');
-      if (cat && cat.triggerRoam) cat.triggerRoam();
+  onPetDebugOverride(e) {
+    const d = e.detail || {};
+    const patch = {
+      petDebugActive: !!d.active,
+      petDebugScenarioId: d.scenarioId || '',
+      petDebugScene: d.scene || this.data.petDebugScene,
+      petDebugEscalation: d.escalation != null ? d.escalation : this.data.petDebugEscalation,
+      petDebugAppState: d.appState || this.data.petDebugAppState,
+      petDebugDoneBand: d.doneBand != null ? d.doneBand : this.data.petDebugDoneBand,
+      petDebugForceClip: d.forceClip != null ? d.forceClip : this.data.petDebugForceClip,
+    };
+    this.setData(patch, () => {
+      this.refresh();
+      if (d.triggerRoam) {
+        wx.nextTick(() => {
+          const cat = this.selectComponent('#homeCat');
+          if (cat && cat.triggerRoam) cat.triggerRoam();
+        });
+      }
     });
   },
 
-  onPetDebugSelectClip(e) {
-    const { clip } = e.currentTarget.dataset;
-    if (!clip) return;
-
-    this.setData({
-      petDebugActive: true,
-      petDebugOpen: true,
-      petDebugScenarioId: '',
-      petDebugForceClip: clip,
-    });
-    this.refresh();
-  },
-
-  onPetDebugTriggerRoam() {
-    const cat = this.selectComponent('#homeCat');
-    if (!cat || !cat.triggerRoam) return;
-    if (!cat.triggerRoam()) {
-      wx.showToast({ title: '当前不可漫游', icon: 'none' });
-    }
-  },
-
-  onPetDebugSimulateTap() {
-    const cat = this.selectComponent('#homeCat');
-    if (cat && cat.clearTapCooldown) cat.clearTapCooldown();
-    if (cat && cat.simulateTap) cat.simulateTap();
-  },
-
-  onPetDebugInjectPatrol() {
+  onPetDebugAction(e) {
     if (!isDevelopEnv()) return;
     const cat = this.selectComponent('#homeCat');
-    if (cat && cat.debugInjectExcitedPatrol) cat.debugInjectExcitedPatrol();
-  },
-
-  onPetDebugReset() {
-    this.setData({
-      petDebugActive: false,
-      petDebugScenarioId: '',
-      petDebugForceClip: '',
-      petDebugScene: 'beforeWork',
-      petDebugEscalation: 0,
-      petDebugAppState: 'idle',
-      petDebugDoneBand: '',
-    });
-    this.refresh();
+    if (!cat) return;
+    const type = e.detail && e.detail.type;
+    if (type === 'roam') {
+      if (!cat.triggerRoam || !cat.triggerRoam()) {
+        wx.showToast({ title: '当前不可漫游', icon: 'none' });
+      }
+    } else if (type === 'tap') {
+      if (cat.clearTapCooldown) cat.clearTapCooldown();
+      if (cat.simulateTap) cat.simulateTap();
+    } else if (type === 'patrol' && cat.debugInjectExcitedPatrol) {
+      cat.debugInjectExcitedPatrol();
+    }
   },
 
   onPetDebugChange(e) {
@@ -485,16 +393,44 @@ Page({
     this.setData({ petDebugInfo: e.detail });
   },
 
+  // 节假日表按年份缓存，避免每秒刷新重复合并。
+  getHolidayMap(now = new Date()) {
+    const year = now.getFullYear();
+    if (this._holidayYear !== year || !this._holidayMap) {
+      this._holidayMap = getHolidayMapForYears([year, year + 1]);
+      this._holidayYear = year;
+    }
+    return this._holidayMap;
+  },
+
   onStartWork() {
     startWork();
     this.refresh();
+  },
+
+  // 休息日 / 法定节假日：用户主动「今天要上班」，选择倍数加班费或调休。
+  onWorkOnRestDay() {
+    const { premiumMultiplier, dayType, restDayKind } = this.data;
+    const kindLabel = restDayKind === 'holiday' ? '法定节假日' : '休息日';
+    wx.showActionSheet({
+      itemList: [`认命，按 ${premiumMultiplier} 倍拿加班费`, '记调休，今天的命白搭'],
+      success: (res) => {
+        const compLeave = res.tapIndex === 1;
+        startWork({ dayType, compLeave });
+        wx.showToast({
+          title: compLeave ? `${kindLabel}搬砖 · 已记调休` : `${kindLabel}加班 · ${premiumMultiplier}× 计薪`,
+          icon: 'none',
+        });
+        this.refresh();
+      },
+    });
   },
 
   onClockOut() {
     if (this.data.ritualActive) return;
     const result = clockOut();
     if (!result) {
-      wx.showToast({ title: '请先开始上班', icon: 'none' });
+      wx.showToast({ title: '都还没搬砖，跑什么路', icon: 'none' });
       return;
     }
     vibrateShort('medium');
@@ -534,7 +470,7 @@ Page({
       sharePayload: null,
       shareImagePath: '',
     });
-    wx.showToast({ title: '收工成功', icon: 'success' });
+    wx.showToast({ title: '跑路成功', icon: 'success' });
   },
 
   onShareAppMessage() {
@@ -542,11 +478,11 @@ Page({
     const payload = this.data.sharePayload;
     if (path && payload) {
       return {
-        title: `今日收工 ¥${payload.earned}`,
+        title: `今日血汗变现 ¥${payload.earned}，离老板的法拉利又近了一寸`,
         path: '/pages/home/index',
         imageUrl: path,
       };
     }
-    return { title: '薪时宝 — 今日收工', path: '/pages/home/index' };
+    return { title: '薪时宝 · 今天的牛马生涯告一段落', path: '/pages/home/index' };
   },
 });
