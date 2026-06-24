@@ -13,6 +13,9 @@ miniprogram/miniprogram_npm/
 # WeChat DevTools: 本机私有配置（覆盖 project.config.json）
 project.private.config.json
 
+# 云环境 ID（含真实 envId，勿提交）
+miniprogram/envList.local.js
+
 # Logs
 *.log
 npm-debug.log*
