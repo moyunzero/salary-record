@@ -47,7 +47,9 @@ npm install
 ```
 
 1. 用微信开发者工具打开项目根目录（**小程序模式**，勿选「多端应用模式」）
-2. 在 `project.config.json` 填入你的 AppID，或使用测试号
+2. 配置 AppID（二选一）：
+   - 复制 `project.private.config.example.json` → `project.private.config.json`，填入你的 AppID
+   - 或直接使用测试号 / 游客模式（`project.config.json` 默认为 `touristappid`）
 3. 编译 → 扫码预览 / 真机调试
 
 > 首次使用会进入引导页，填写月薪与工时后即可在首页开始「搬砖」。
@@ -116,7 +118,9 @@ flowchart TB
 
 1. 开发者工具 → **云开发** → 创建 / 选择环境
 2. 右键 **`cloudfunctions`** → **切换环境**
-3. 将 `miniprogram/envList.js` 中 `envId` 改为你的环境 ID
+3. 将云环境 ID 写入本地配置（**勿提交 GitHub**）：
+   - 复制 `miniprogram/envList.example.js` → `miniprogram/envList.local.js`
+   - 填入你的 `envId`
 
 ### 1. 部署云函数
 
@@ -196,7 +200,7 @@ npm run build:meow-sfx
 - **`core/` 禁止直接调用 `wx.*`** — 便于单测与长期维护
 - **`lazyCodeLoading: requiredComponents`** — 按需注入组件，控制主包体积
 - **开发版调试** — 首页长按猫咪可打开动画调试面板（`develop` 环境；体验版 / 正式版不可见）
-- **`project.private.config.json`** — 本机 DevTools 私有配置，已加入 `.gitignore`
+- **`project.private.config.json`** / **`miniprogram/envList.local.js`** — 本机 AppID 与云环境 ID，已加入 `.gitignore`
 
 ---
 
