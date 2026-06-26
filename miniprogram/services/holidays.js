@@ -15,7 +15,12 @@ function bundledMap(year) {
 function readCache(year) {
   try {
     const cached = wx.getStorageSync(CACHE_PREFIX + year);
-    if (cached && typeof cached === 'object' && !Array.isArray(cached)) {
+    if (
+      cached &&
+      typeof cached === 'object' &&
+      !Array.isArray(cached) &&
+      Object.keys(cached).length > 0
+    ) {
       return cached;
     }
   } catch (_) {}

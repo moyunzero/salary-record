@@ -33,10 +33,10 @@
       <view class="share-preview-meta">
         <text>{{payload.startTime}} – {{payload.endTime}}</text>
         <text class="share-preview-dot">·</text>
-        <text>有效时薪 ¥{{payload.effectiveHourly}}</text>
+        <text>卷后价 ¥{{payload.effectiveHourly}}</text>
       </view>
 
-      <text class="share-disclaimer">数据来自你亲手搬的每一块砖</text>
+      <text class="share-disclaimer">数据来自你今天卷出的每一滴血汗</text>
     </view>
 
     <view class="share-loading" wx:else>加载中…</view>

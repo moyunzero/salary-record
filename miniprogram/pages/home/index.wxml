@@ -12,37 +12,38 @@
           <view class="brand-hand"></view>
           <view class="brand-core"></view>
         </view>
-        <text class="page-title">今日搬砖</text>
+        <text class="page-title">今日社畜</text>
       </view>
-      <text class="page-subtitle" wx:if="{{state === 'idle'}}">点一下，开启今天的牛马生涯</text>
+      <text class="page-subtitle" wx:if="{{state === 'idle'}}">点一下，开启今天的社畜生涯</text>
       <text class="page-subtitle" wx:elif="{{state === 'working' && restMode}}">{{startTime}} 起 · {{restLabel}}中 · 老板暂停付钱</text>
-      <text class="page-subtitle" wx:elif="{{state === 'working'}}">{{startTime}} 起 · {{inOvertime ? (devMockOvertime ? '血汗已达标 · 模拟' : '血汗已达标 · 剩下都是白给') : '血汗实时到账中'}}</text>
-      <text class="page-subtitle" wx:else>{{startTime}} – {{endTime}} · 今天搬完了，跑路</text>
+      <text class="page-subtitle" wx:elif="{{state === 'working' && showPunchTime}}">计薪自 {{startTime}} · 打卡 {{punchTime}} · {{inOvertime ? (devMockOvertime ? '刑期已满 · 模拟' : '自愿卷中，越卷越亏') : '血汗实时到账中'}}</text>
+      <text class="page-subtitle" wx:elif="{{state === 'working'}}">{{startTime}} 起 · {{inOvertime ? (devMockOvertime ? '刑期已满 · 模拟' : '自愿卷中，越卷越亏') : '血汗实时到账中'}}</text>
+      <text class="page-subtitle" wx:else>{{startTime}} – {{endTime}} · 今日已上缴</text>
     </view>
 
     <view class="card home-card">
       <view class="home-hero">
         <block wx:if="{{state === 'rest'}}">
-          <text class="home-hero-label">{{restDayKind === 'holiday' ? holidayName + ' · 法定节假日' : '周末 · 牛马也要喘口气'}}</text>
+          <text class="home-hero-label">{{restDayKind === 'holiday' ? holidayName + ' · 恩假' : '休沐 · 社畜也要喘口气'}}</text>
           <view class="home-rest-hero">
             <text class="home-rest-hero-emoji">{{restDayKind === 'holiday' ? '休' : '躺'}}</text>
-            <text class="home-rest-hero-text">今天躺平 · 月薪照拿，舒服</text>
+            <text class="home-rest-hero-text">今天躺平 · 卖身价照拿，舒服</text>
           </view>
           <view class="home-rest-chip home-rest-chip-premium">
-            <text>真要搬砖，可计 {{premiumMultiplier}}× 工资</text>
+            <text>真要开卷，可计 {{premiumMultiplier}}× 工资</text>
           </view>
         </block>
         <block wx:else>
-          <text class="home-hero-label">{{premiumMode ? '今日加班费 ×' + premiumMultiplier : heroLabel}}</text>
+          <text class="home-hero-label">{{premiumMode ? '今日自愿卷 ×' + premiumMultiplier : heroLabel}}</text>
           <view class="preview-hero home-hero-amount">
             <text class="preview-currency home-hero-currency">¥</text>
             <text class="preview-value tabular {{amountSizeClass}} {{state === 'working' && !inOvertime && !restMode && !premiumMode ? 'earned-breathe' : ''}} {{restMode ? 'home-hero-paused' : ''}}">{{heroAmount}}</text>
           </view>
           <view class="home-rest-chip" wx:if="{{premiumMode && compLeave}}">
-            <text>记了调休 · 今天白干</text>
+            <text>记了白干 · 今天白干</text>
           </view>
           <view class="home-rest-chip home-rest-chip-premium" wx:elif="{{premiumMode}}">
-            <text>×{{premiumMultiplier}} 加班费</text>
+            <text>×{{premiumMultiplier}} 自愿卷薪</text>
           </view>
           <view class="home-rest-chip" wx:elif="{{restMode}}">
             <text>老板暂停付钱</text>
@@ -59,7 +60,7 @@
               <text class="ring-metric ring-metric-idle">—</text>
             </block>
             <block wx:elif="{{state === 'rest'}}">
-              <text class="ring-kicker ring-kicker-rest">{{restDayKind === 'holiday' ? '节假日' : '休息日'}}</text>
+              <text class="ring-kicker ring-kicker-rest">{{restDayKind === 'holiday' ? '恩假' : '休沐'}}</text>
               <text class="ring-metric ring-metric-rest">{{restDayKind === 'holiday' ? '休' : '躺'}}</text>
             </block>
             <block wx:elif="{{restMode}}">
@@ -67,15 +68,15 @@
               <text class="ring-metric ring-metric-rest tabular">{{restCountdown}}</text>
             </block>
             <block wx:elif="{{premiumMode}}">
-              <text class="ring-kicker ring-kicker-premium">加班 ×{{premiumMultiplier}}</text>
-              <text class="ring-metric ring-metric-premium tabular">{{ringPct}}%</text>
+              <text class="ring-kicker ring-kicker-premium">自愿卷 ×{{premiumMultiplier}}</text>
+              <text class="ring-metric ring-metric-premium tabular">{{premiumWorkedDisplay}}</text>
             </block>
             <block wx:elif="{{inOvertime}}">
-              <text class="ring-kicker ring-kicker-overtime">加班</text>
+              <text class="ring-kicker ring-kicker-overtime">自愿卷</text>
               <text class="ring-metric ring-metric-overtime tabular">{{overtimeDuration}}</text>
             </block>
             <block wx:else>
-              <text class="ring-kicker">刑期</text>
+              <text class="ring-kicker">今日刑期</text>
               <text class="ring-metric tabular">{{ringPct}}%</text>
             </block>
           </view>
@@ -90,35 +91,35 @@
         </view>
         <view class="ring-footnote" wx:elif="{{inOvertime}}">
           <view class="ring-footnote-dot"></view>
-          <text>越搬越不值钱</text>
+          <text>越卷越亏</text>
         </view>
       </view>
 
       <view class="home-rest-note" wx:if="{{state === 'rest'}}">
-        <text>{{restDayKind === 'holiday' ? '节假日被喊上班？3 倍工资拿好，或调休换一天' : '休息日还想搬砖？2 倍工资拿好，或调休换一天'}}</text>
+        <text>{{restDayKind === 'holiday' ? '恩假被喊上班？3 倍工资拿好，或白干换一天' : '休沐还想开卷？2 倍工资拿好，或白干换一天'}}</text>
       </view>
       <view class="home-rest-note" wx:elif="{{premiumMode && compLeave}}">
-        <text>用今天的命换一天调休 · 今日白干（调休余额 +1）</text>
+        <text>用今天的命换一天白干 · 今天白干（白干余额 +1）</text>
       </view>
       <view class="home-rest-note" wx:elif="{{premiumMode}}">
-        <text>{{restDayKind === 'holiday' ? '节假日加班' : '休息日加班'}}，工资按 {{premiumMultiplier}} 倍计，勉强值了</text>
+        <text>{{restDayKind === 'holiday' ? '恩假自愿卷' : '休沐自愿卷'}}，工资按 {{premiumMultiplier}} 倍计，勉强值了</text>
       </view>
       <view class="home-rest-note" wx:elif="{{restMode}}">
-        <text>{{restLabel}}不计工时，月薪一分没少，安心摸</text>
+        <text>{{restLabel}}不计工时，卖身价一分没少，安心摸</text>
       </view>
       <view class="home-stats" wx:elif="{{state !== 'idle'}}">
         <view class="home-stat">
-          <text class="home-stat-label">有效时薪</text>
+          <text class="home-stat-label">卷后价</text>
           <text class="home-stat-value tabular" style="color: {{hourlyColor}}">¥{{effectiveHourly}}</text>
         </view>
         <view class="home-stat-divider"></view>
         <view class="home-stat">
-          <text class="home-stat-label">贬值系数</text>
+          <text class="home-stat-label">贬值率</text>
           <text class="home-stat-value tabular" style="color: {{hourlyColor}}">{{dilutionDisplay}}%</text>
         </view>
       </view>
       <view class="preview-meta home-meta" wx:else>
-        <text>开始搬砖后，实时围观血汗变成钱</text>
+        <text>开始卷后，实时围观血汗变成钱</text>
       </view>
     </view>
 
@@ -127,23 +128,23 @@
       class="btn-primary btn-block home-cta-btn"
       bindtap="onStartWork"
       hover-class="btn-hover"
-    >开始搬砖</button>
+    >开始卷</button>
 
     <button
       wx:elif="{{state === 'rest'}}"
       class="btn-primary btn-block home-cta-btn home-cta-rest"
       bindtap="onWorkOnRestDay"
       hover-class="btn-hover"
-    >老板喊我加班</button>
+    >自愿卷</button>
 
     <button
       wx:elif="{{state === 'working'}}"
       class="btn-primary btn-block home-cta-btn"
       bindtap="onClockOut"
       hover-class="btn-hover"
-    >今天不干了，跑路</button>
+    >跑路</button>
 
-    <button wx:else class="btn-primary btn-block btn-disabled home-cta-btn" disabled>今天搬完了</button>
+    <button wx:else class="btn-primary btn-block btn-disabled home-cta-btn" disabled>今日上缴</button>
     <view class="home-pet-bound-top"></view>
   </view>
 

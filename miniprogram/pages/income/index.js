@@ -1,4 +1,4 @@
-const { getRecords } = require('../../services/clock');
+const { getRecords, isFutureDate } = require('../../services/clock');
 const { getHolidayMapForYears } = require('../../services/holidays');
 const {
   bucketLast7Days,
@@ -26,15 +26,48 @@ Page({
     calendarMonth: _now.getMonth() + 1,
     markedDates: [],
     holidays: {},
+    showOfficialHolidays: true,
+    workCalendarSettings: {},
   },
 
   onLoad() {
     this._chartSnap = '';
+    this.syncWorkCalendarSettings();
     this.updateHolidays();
+    this.syncHolidayDisplaySetting();
   },
 
   onShow() {
+    this.syncWorkCalendarSettings();
+    this.syncHolidayDisplaySetting();
     this.refresh();
+  },
+
+  syncWorkCalendarSettings() {
+    const { getSettings } = require('../../services/settings');
+    const s = getSettings();
+    const next = {
+      restSystem: s.restSystem || 'double_rest',
+      bigSmall: s.bigSmall || { anchorWeekDate: '', anchorType: 'big' },
+      workWeekdays: s.workWeekdays || [1, 2, 3, 4, 5],
+      holidayAutoRest: s.holidayAutoRest !== false,
+    };
+    if (JSON.stringify(next) !== JSON.stringify(this.data.workCalendarSettings)) {
+      this.setData({ workCalendarSettings: next });
+    }
+  },
+
+  syncHolidayDisplaySetting() {
+    const { getSettings } = require('../../services/settings');
+    const showOfficialHolidays = getSettings().holidayAutoRest !== false;
+    if (showOfficialHolidays !== this.data.showOfficialHolidays) {
+      this.setData({ showOfficialHolidays });
+    }
+  },
+
+  currentChartMonth() {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() + 1 };
   },
 
   // 加载当前展示年份的节假日表（含次年，覆盖跨年）
@@ -61,18 +94,15 @@ Page({
     if (hasData) {
       let bucket;
       if (this.data.chartMode === 'month') {
-        bucket = bucketMonthByWeek(
-          records,
-          this.data.calendarYear,
-          this.data.calendarMonth
-        );
+        const { year, month } = this.currentChartMonth();
+        bucket = bucketMonthByWeek(records, year, month);
       } else {
         bucket = bucketLast7Days(records);
       }
       const snap = JSON.stringify({
         mode: this.data.chartMode,
-        year: this.data.calendarYear,
-        month: this.data.calendarMonth,
+        year: this.data.chartMode === 'month' ? this.currentChartMonth().year : this.data.calendarYear,
+        month: this.data.chartMode === 'month' ? this.currentChartMonth().month : this.data.calendarMonth,
         categories: bucket.categories,
         data: bucket.data,
       });
@@ -103,21 +133,19 @@ Page({
   _applyChart(records) {
     let bucket;
     if (this.data.chartMode === 'month') {
-      bucket = bucketMonthByWeek(
-        records,
-        this.data.calendarYear,
-        this.data.calendarMonth
-      );
+      const { year, month } = this.currentChartMonth();
+      bucket = bucketMonthByWeek(records, year, month);
     } else {
       bucket = bucketLast7Days(records);
     }
+    const chartMonth = this.currentChartMonth();
     const total = bucket.data.reduce((sum, v) => sum + v, 0);
     const activeDays = bucket.data.filter((v) => v > 0).length;
     const avg = activeDays > 0 ? total / activeDays : 0;
     this._chartSnap = JSON.stringify({
       mode: this.data.chartMode,
-      year: this.data.calendarYear,
-      month: this.data.calendarMonth,
+      year: this.data.chartMode === 'month' ? chartMonth.year : this.data.calendarYear,
+      month: this.data.chartMode === 'month' ? chartMonth.month : this.data.calendarMonth,
       categories: bucket.categories,
       data: bucket.data,
     });
@@ -151,9 +179,6 @@ Page({
       calendarYear -= 1;
     }
     this.setData({ calendarYear, calendarMonth }, () => this.updateHolidays());
-    if (this.data.chartMode === 'month') {
-      this._applyChart(getRecords());
-    }
   },
 
   onNextMonth() {
@@ -164,14 +189,15 @@ Page({
       calendarYear += 1;
     }
     this.setData({ calendarYear, calendarMonth }, () => this.updateHolidays());
-    if (this.data.chartMode === 'month') {
-      this._applyChart(getRecords());
-    }
   },
 
   onCalendarDayTap(e) {
     const { date } = e.detail;
     if (!date) return;
+    if (isFutureDate(date)) {
+      wx.showToast({ title: '还没到的日子，卷不了', icon: 'none' });
+      return;
+    }
     const app = getApp();
     app.globalData.editRecordDate = date;
     wx.navigateTo({ url: '/pages/record/index' });

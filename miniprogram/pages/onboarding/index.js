@@ -1,6 +1,7 @@
-const { DEFAULT_INSURANCE, calcNetMonthly } = require('../../core/insurance');
+const { DEFAULT_INSURANCE, calcNetMonthly, INSURANCE_PERSONAL_LIMITS, insuranceToPercent, percentToInsurance, clampInsurancePercent } = require('../../core/insurance');
 const { calcBaseHourly, roundMoney } = require('../../core/salary');
 const { INSURANCE_PRESETS, WORK_PRESETS, roundPercent } = require('../../constants/presets');
+const { defaultWorkSchedule, computeDailyWorkHours } = require('../../core/work-schedule');
 const { saveSettings } = require('../../services/settings');
 const { vibrateShort } = require('../../services/platform');
 
@@ -24,9 +25,13 @@ Page({
       fund: 12,
     },
     insurancePresets: INSURANCE_PRESETS,
+    insuranceLimits: INSURANCE_PERSONAL_LIMITS,
     workPresets: WORK_PRESETS,
     selectedInsurancePreset: 'national_common',
     selectedWorkPreset: 'legal_double_rest',
+    restSystem: 'double_rest',
+    workSchedule: null,
+    nightShiftEnabled: false,
     insuranceFineTuneOpen: false,
     workFineTuneOpen: false,
     showPreview: false,
@@ -39,11 +44,25 @@ Page({
   onLoad() {
     const win = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
     const safeBottom = win.safeArea ? win.screenHeight - win.safeArea.bottom : 0;
+    const defaultPreset = WORK_PRESETS.find((p) => p.id === 'legal_double_rest');
     this.setData({
       statusBarHeight: win.statusBarHeight || 44,
       safeBottom,
+      workSchedule: defaultPreset
+        ? JSON.parse(JSON.stringify(defaultPreset.workSchedule))
+        : defaultWorkSchedule(),
+      nightShiftEnabled: false,
+      restSystem: defaultPreset ? defaultPreset.restSystem : 'double_rest',
     });
     this.updatePreview();
+  },
+
+  mondayStr(now = new Date()) {
+    const dow = now.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow;
+    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff);
+    const p = (n) => String(n).padStart(2, '0');
+    return `${monday.getFullYear()}-${p(monday.getMonth() + 1)}-${p(monday.getDate())}`;
   },
 
   updatePreview() {
@@ -91,6 +110,11 @@ Page({
         selectedWorkPreset: id,
         standardHoursPerDay: preset.standardHoursPerDay,
         workDaysPerMonth: preset.workDaysPerMonth,
+        restSystem: preset.restSystem || 'double_rest',
+        workSchedule: preset.workSchedule
+          ? JSON.parse(JSON.stringify(preset.workSchedule))
+          : defaultWorkSchedule(),
+        nightShiftEnabled: !!preset.nightShiftEnabled,
       },
       () => this.updatePreview()
     );
@@ -98,10 +122,10 @@ Page({
 
   onInsuranceSlider(e) {
     const key = e.currentTarget.dataset.key;
+    if (INSURANCE_PERSONAL_LIMITS[key]?.fixed) return;
     const raw = Number(e.detail.value);
-    const display = key === 'unemployment' ? roundPercent(raw, 2) : roundPercent(raw, 1);
-    const insurancePercent = { ...this.data.insurancePercent, [key]: display };
-    const insurance = { ...this.data.insurance, [key]: display / 100 };
+    const insurancePercent = clampInsurancePercent({ ...this.data.insurancePercent, [key]: raw });
+    const insurance = percentToInsurance(insurancePercent);
     this.setData(
       {
         selectedInsurancePreset: 'custom',
@@ -140,17 +164,33 @@ Page({
   onFinish() {
     const salary = Number(this.data.monthlySalary);
     if (!salary || salary <= 0) {
-      wx.showToast({ title: '月薪填一个，总不能白卖命', icon: 'none' });
+      wx.showToast({ title: '卖身价填一个，总不能白卖命', icon: 'none' });
       return;
     }
     vibrateShort('light');
-    saveSettings({
+    const workSchedule = this.data.workSchedule || defaultWorkSchedule();
+    const nightShiftEnabled = !!this.data.nightShiftEnabled;
+    const scheduleHours = computeDailyWorkHours(workSchedule, nightShiftEnabled);
+    const restSystem = this.data.restSystem || 'double_rest';
+    const payload = {
       monthlySalary: salary,
       insurance: this.data.insurance,
-      standardHoursPerDay: this.data.standardHoursPerDay,
       workDaysPerMonth: this.data.workDaysPerMonth,
+      workSchedule,
+      nightShiftEnabled,
+      restSystem,
+      holidayAutoRest: true,
       onboardingDone: true,
-    });
+    };
+    if (this.data.selectedWorkPreset === 'custom') {
+      payload.standardHoursPerDay = this.data.standardHoursPerDay;
+    } else {
+      payload.standardHoursPerDay = scheduleHours;
+    }
+    if (restSystem === 'big_small_week') {
+      payload.bigSmall = { anchorWeekDate: this.mondayStr(), anchorType: 'big' };
+    }
+    saveSettings(payload);
     wx.switchTab({ url: '/pages/home/index' });
   },
 });

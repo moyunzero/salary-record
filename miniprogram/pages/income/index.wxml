@@ -6,7 +6,7 @@
 
   <view class="sub-nav-bar">
     <view class="sub-nav-back" bindtap="onBack">‹</view>
-    <text class="sub-nav-title">血汗趋势</text>
+    <text class="sub-nav-title">血汗曲线</text>
   </view>
 
   <view class="page-body">
@@ -19,7 +19,7 @@
         <view
           class="income-segment-item {{chartMode === 'week' ? 'income-segment-active' : ''}}"
           bindtap="onChartModeWeek"
-        >本周</view>
+        >近7天</view>
         <view
           class="income-segment-item {{chartMode === 'month' ? 'income-segment-active' : ''}}"
           bindtap="onChartModeMonth"
@@ -40,7 +40,7 @@
       </view>
 
       <view class="empty-state income-empty" wx:else>
-        <text class="empty-title">还没搬过砖</text>
+        <text class="empty-title">还没卷过</text>
         <text class="empty-desc">收工或补录工时后，这里就有你的血汗曲线了</text>
       </view>
     </view>
@@ -56,14 +56,27 @@
         month="{{calendarMonth}}"
         markedDates="{{markedDates}}"
         holidays="{{holidays}}"
+        work-settings="{{workCalendarSettings}}"
+        show-official-holidays="{{showOfficialHolidays}}"
         bind:daytap="onCalendarDayTap"
       />
       <view class="calendar-legend">
-        <view class="legend-item"><text class="legend-tag legend-tag-rest">休</text><text>法定节假日</text></view>
-        <view class="legend-item"><text class="legend-tag legend-tag-work">班</text><text>调休补班</text></view>
-        <view class="legend-item"><view class="legend-dot legend-dot-work"></view><text>工作日</text></view>
-        <view class="legend-item"><view class="legend-dot legend-dot-premium"></view><text>加班</text></view>
-        <view class="legend-item"><view class="legend-dot legend-dot-comp"></view><text>调休</text></view>
+        <view class="calendar-legend-group">
+          <text class="calendar-legend-heading">日历</text>
+          <view class="calendar-legend-row">
+            <view class="legend-item"><text class="legend-tag legend-tag-rest">休</text><text>恩假</text></view>
+            <view class="legend-item"><text class="legend-tag legend-tag-work">班</text><text>债班</text></view>
+            <view class="legend-item"><view class="legend-swatch legend-swatch-weekly-rest"></view><text>休沐</text></view>
+          </view>
+        </view>
+        <view class="calendar-legend-group">
+          <text class="calendar-legend-heading">已卷</text>
+          <view class="calendar-legend-row">
+            <view class="legend-item"><view class="legend-dot legend-dot-work"></view><text>已记录</text></view>
+            <view class="legend-item"><view class="legend-dot legend-dot-premium"></view><text>自愿卷</text></view>
+            <view class="legend-item"><view class="legend-dot legend-dot-comp"></view><text>白干</text></view>
+          </view>
+        </view>
       </view>
     </view>
   </view>

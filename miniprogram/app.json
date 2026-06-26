@@ -28,7 +28,7 @@
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我",
+        "text": "档案",
         "iconPath": "assets/icons/tab-profile.png",
         "selectedIconPath": "assets/icons/tab-profile-active.png"
       }

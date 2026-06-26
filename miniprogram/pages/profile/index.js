@@ -2,6 +2,7 @@ const safeArea = require('../../behaviors/safe-area');
 const { calcNetMonthly } = require('../../core/insurance');
 const { calcBaseHourly, roundMoney } = require('../../core/salary');
 const { getSettings } = require('../../services/settings');
+const { todayStr } = require('../../services/clock');
 const { getLastSyncAt, formatLastSyncDisplay } = require('../../services/sync');
 const { roundPercent } = require('../../constants/presets');
 
@@ -17,7 +18,7 @@ Page({
     previewHourly: '0.00',
     previewNetMonthly: '0',
     previewMonthlyHours: '174',
-    settingsHint: '月薪、五险一金与工时 · 云备份未开启',
+    settingsHint: '卖身价、福报扣与刑期 · 云备份未开启',
   },
 
   refreshPreview() {
@@ -49,7 +50,7 @@ Page({
       cloudPart = display === '尚未同步' ? '云备份已开启 · 尚未同步' : `云备份已开启 · ${display}`;
     }
     this.setData({
-      settingsHint: `月薪、五险一金与工时 · ${cloudPart}`,
+      settingsHint: `卖身价、福报扣与刑期 · ${cloudPart}`,
     });
   },
 
@@ -64,6 +65,8 @@ Page({
   },
 
   onGoRecord() {
+    const app = getApp();
+    app.globalData.editRecordDate = todayStr();
     wx.navigateTo({ url: '/pages/record/index' });
   },
 

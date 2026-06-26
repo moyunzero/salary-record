@@ -6,7 +6,7 @@
 
   <view class="page-body">
     <view class="preview-card preview-card-lit">
-      <view class="preview-label">当前牛马时薪</view>
+      <view class="preview-label">卷前价</view>
       <view class="preview-hero">
         <text class="preview-currency">¥</text>
         <text class="preview-value tabular">{{previewHourly}}</text>
@@ -15,7 +15,7 @@
       <view class="preview-meta">
         <text>到手月薪 ¥{{previewNetMonthly}}</text>
         <text class="preview-dot">·</text>
-        <text>{{previewMonthlyHours}} 标准工时/月</text>
+        <text>{{previewMonthlyHours}} 刑期/月</text>
       </view>
     </view>
 
@@ -23,14 +23,14 @@
       <view class="section-head">
         <view class="section-badge">数</view>
         <view>
-          <view class="section-label">我的牛马档案</view>
-          <view class="title">血汗与趋势</view>
+          <view class="section-label">社畜档案</view>
+          <view class="title">血汗与曲线</view>
         </view>
       </view>
 
       <view class="profile-link-row" bindtap="onGoRecord">
         <view class="profile-link-main">
-          <text class="profile-link-title">搬砖记录</text>
+          <text class="profile-link-title">血汗记录</text>
           <text class="profile-link-hint">补录或修改历史血汗</text>
         </view>
         <text class="profile-link-chevron">›</text>
@@ -38,7 +38,7 @@
 
       <view class="profile-link-row" bindtap="onGoIncome">
         <view class="profile-link-main">
-          <text class="profile-link-title">血汗趋势</text>
+          <text class="profile-link-title">血汗曲线</text>
           <text class="profile-link-hint">周/月统计与日历</text>
         </view>
         <text class="profile-link-chevron">›</text>
@@ -46,7 +46,7 @@
 
       <view class="profile-link-row" bindtap="onGoSettings">
         <view class="profile-link-main">
-          <text class="profile-link-title">工作设置</text>
+          <text class="profile-link-title">社畜设置</text>
           <text class="profile-link-hint">{{settingsHint}}</text>
         </view>
         <text class="profile-link-chevron">›</text>

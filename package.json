@@ -1,9 +1,13 @@
 {
   "name": "salary-record",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "test:core": "node tests/core/insurance.test.js && node tests/core/salary.test.js && node tests/core/dilution.test.js && node tests/core/work-schedule.test.js && node tests/core/work-calendar.test.js && node tests/core/pet-context.test.js && node tests/core/pet-arcs.test.js && node tests/core/pet-micro.test.js && node tests/core/pet-rhythm.test.js && node tests/core/pet-companion.test.js && node tests/core/pet-walk.test.js && node tests/core/aggregate.test.js && node tests/core/sync-crypto.test.js && node tests/core/sync-merge.test.js && node tests/services/clock.test.js && node tests/services/holidays.test.js && node tests/services/records.test.js && node tests/services/sync.test.js && node tests/services/enable-cloud-sync.test.js",
     "test:pet-e2e": "node scripts/run-pet-e2e.mjs",
+    "test:acceptance": "node scripts/run-acceptance.mjs",
+    "test:acceptance:phase2": "node scripts/run-acceptance-phase2.mjs",
+    "test:acceptance:all": "node scripts/run-acceptance.mjs && node scripts/run-acceptance-phase2.mjs",
     "test:all": "npm run test:core && npm run test:pet-e2e",
     "build:cat-atlas": "node scripts/slice-cat-sprites.mjs && node scripts/verify-cat-atlas.mjs",
     "build:meow-sfx": "node scripts/copy-meow-sfx.mjs"

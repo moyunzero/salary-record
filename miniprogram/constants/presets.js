@@ -4,23 +4,16 @@ const INSURANCE_PRESETS = [
   {
     id: 'national_common',
     name: '全国常见',
-    note: '养老8% · 医疗2% · 失业0.5% · 公积金12%',
+    note: '养老8% · 医疗2% · 失业0.5% · 公积金12%（法定上限）',
     insurance: { pension: 0.08, medical: 0.02, unemployment: 0.005, fund: 0.12 },
     insurancePercent: { pension: 8, medical: 2, unemployment: 0.5, fund: 12 },
   },
   {
     id: 'fund_5',
     name: '公积金5%',
-    note: '社保同上，公积金按下限5%（常见最低档）',
+    note: '社保同上，公积金按下限5%（法定最低档）',
     insurance: { pension: 0.08, medical: 0.02, unemployment: 0.005, fund: 0.05 },
     insurancePercent: { pension: 8, medical: 2, unemployment: 0.5, fund: 5 },
-  },
-  {
-    id: 'unemployment_1',
-    name: '失业1%地区',
-    note: '部分省市失业个人缴费仍为1%',
-    insurance: { pension: 0.08, medical: 0.02, unemployment: 0.01, fund: 0.12 },
-    insurancePercent: { pension: 8, medical: 2, unemployment: 1, fund: 12 },
   },
 ];
 

@@ -27,6 +27,11 @@ const settings = {
   workDaysPerMonth: 21.75,
   standardHoursPerDay: 8,
   insurance: { pension: 0.08, medical: 0.02, unemployment: 0.005, fund: 0.12 },
+  workSchedule: {
+    morning: { start: '09:00', end: '12:00' },
+    lunch: { start: '12:00', end: '13:00' },
+    afternoon: { start: '13:00', end: '18:00' },
+  },
 };
 const baseHourly = calcBaseHourly(
   calcNetMonthly(settings.monthlySalary, settings.insurance),
@@ -193,6 +198,21 @@ const editWorkday = buildRecordEditView(settings, '09:00', '18:00', {
   holidayMap,
 });
 assert.strictEqual(editWorkday.isPremiumDay, false);
+assert.strictEqual(editWorkday.inOvertime, false, '工作日 09-18 扣午休后无白加');
 assert.ok(parseFloat(editWorkday.earned) > 0);
+
+// 墓碑不阻挡自动开始（仅有效记录阻挡）
+__storage.xsb_settings = { ...settings, autoStartEnabled: true };
+__storage.xsb_records = [{
+  id: 'rec_tomb',
+  date: '2026-06-22',
+  startTime: '09:00',
+  endTime: '18:00',
+  deleted: true,
+  updatedAt: 1,
+}];
+const autoAfterTombstone = autoStartWorkIfDue(new Date('2026-06-22T11:00:00+08:00'));
+assert.ok(autoAfterTombstone, '仅有墓碑时可自动开始');
+assert.strictEqual(autoAfterTombstone.startTime, '09:00');
 
 console.log('clock.test.js: ok');

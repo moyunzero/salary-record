@@ -1,11 +1,13 @@
 const { getSettings } = require('../../services/settings');
 const {
   todayStr,
+  isFutureDate,
   getRecordByDate,
   getTodayRecord,
   buildRecordEditView,
   upsertManualRecord,
   deleteRecord,
+  defaultRecordTimes,
 } = require('../../services/clock');
 const { getHolidayMapForYears } = require('../../services/holidays');
 
@@ -29,6 +31,9 @@ Page({
     premiumMultiplier: 1,
     dayBadge: '',
     compLeave: false,
+    payAnchorStart: '',
+    showPayAnchorNote: false,
+    maxRecordDate: '',
   },
 
   holidayMapFor(date) {
@@ -37,25 +42,45 @@ Page({
   },
 
   onShow() {
+    const maxRecordDate = todayStr();
+    const patch = {};
+    if (maxRecordDate !== this.data.maxRecordDate) {
+      patch.maxRecordDate = maxRecordDate;
+    }
     const app = getApp();
     const editDate = app.globalData.editRecordDate;
     if (editDate) {
       app.globalData.editRecordDate = null;
+      if (Object.keys(patch).length) this.setData(patch);
       this.loadDate(editDate);
       return;
     }
     if (!this.data.date) {
-      this.loadDate(todayStr());
+      if (Object.keys(patch).length) this.setData(patch);
+      this.loadDate(maxRecordDate);
+      return;
+    }
+    if (Object.keys(patch).length) {
+      this.setData(patch, () => this.refreshPreview());
+    } else {
+      this.refreshPreview();
     }
   },
 
   loadDate(date) {
+    const max = todayStr();
+    if (isFutureDate(date)) {
+      wx.showToast({ title: '还没到的日子，卷不了', icon: 'none' });
+      date = max;
+    }
+    const settings = getSettings();
+    const defaults = defaultRecordTimes(settings);
     const rec = getRecordByDate(date);
     this.setData({
       recordId: rec?.id || '',
       date,
-      startTime: rec?.startTime || '09:00',
-      endTime: rec?.endTime || '18:00',
+      startTime: rec?.startTime || defaults.startTime,
+      endTime: rec?.endTime || defaults.endTime,
       hasExisting: !!rec,
       compLeave: !!(rec && rec.compLeave),
     });
@@ -89,12 +114,14 @@ Page({
     });
     let dayBadge = '';
     if (view.dayType === 'statutory_holiday') {
-      dayBadge = `${view.holidayName || '法定节假日'} · ${view.premiumMultiplier}× 加班费`;
+      dayBadge = `${view.holidayName || '恩假'} · ${view.premiumMultiplier}× 自愿卷薪`;
     } else if (view.dayType === 'weekly_rest') {
-      dayBadge = `休息日 · ${view.premiumMultiplier}× 加班费`;
+      dayBadge = `休沐 · ${view.premiumMultiplier}× 自愿卷薪`;
     } else if (view.dayType === 'makeup_workday') {
-      dayBadge = '调休补班日 · 正常计薪';
+      dayBadge = '债班日 · 正常计薪';
     }
+    const payAnchorStart = view.payAnchorStart || '';
+    const showPayAnchorNote = !view.isPremiumDay && payAnchorStart && this.data.startTime !== payAnchorStart;
     this.setData({
       previewValid: view.valid,
       earned: view.earned,
@@ -106,10 +133,16 @@ Page({
       isPremiumDay: view.isPremiumDay,
       premiumMultiplier: view.premiumMultiplier,
       dayBadge,
+      payAnchorStart,
+      showPayAnchorNote,
     });
   },
 
   onSave() {
+    if (isFutureDate(this.data.date)) {
+      wx.showToast({ title: '还没到的日子，卷不了', icon: 'none' });
+      return;
+    }
     const today = getTodayRecord();
     if (this.data.date === todayStr() && today && !today.endTime) {
       wx.showToast({ title: '今天还没跑路，回首页先收工', icon: 'none' });
@@ -127,7 +160,9 @@ Page({
       compLeave: this.data.isPremiumDay ? this.data.compLeave : false,
     });
     if (!result.ok) {
-      wx.showToast({ title: '存不上，时间再调调', icon: 'none' });
+      const msg =
+        result.error === 'FUTURE_DATE' ? '还没到的日子，卷不了' : '存不上，时间再调调';
+      wx.showToast({ title: msg, icon: 'none' });
       return;
     }
     this.setData({
@@ -140,17 +175,18 @@ Page({
   onDelete() {
     if (!this.data.recordId) return;
     wx.showModal({
-      title: '删掉这天',
-      content: `确定抹掉 ${this.data.date} 这天的血汗？删了就当没搬过，找不回来。`,
+      title: '删掉',
+      content: `确定抹掉 ${this.data.date} 这天的血汗？删了就当没卷过，找不回来。`,
       confirmColor: '#ef4444',
       success: (res) => {
         if (!res.confirm) return;
         if (deleteRecord(this.data.recordId)) {
+          const defaults = defaultRecordTimes(getSettings());
           this.setData({
             recordId: '',
             hasExisting: false,
-            startTime: '09:00',
-            endTime: '18:00',
+            startTime: defaults.startTime,
+            endTime: defaults.endTime,
           });
           this.refreshPreview();
           wx.showToast({ title: '这天不存在了', icon: 'success' });

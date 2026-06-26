@@ -33,11 +33,39 @@
   pointer-events: none;
 }
 
-/* 今天：绿色描边高亮 */
+/* 未来日期：不可补录，弱化展示 */
+.calendar-cell-future {
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.calendar-cell-future .calendar-day,
+.calendar-cell-future .calendar-day-weekly-rest,
+.calendar-cell-future .calendar-day-holiday {
+  color: #475569;
+}
+
+/* 按工作制判定的休息日：淡靛底，与法定「休」角标、今日高亮区分 */
+.calendar-cell-weekly-rest {
+  border-radius: 16rpx;
+  background: rgba(99, 102, 241, 0.09);
+  box-shadow: inset 0 0 0 1rpx rgba(129, 140, 248, 0.14);
+}
+
+.calendar-day-weekly-rest {
+  color: #a5b4fc;
+}
+
+/* 今天：绿色描边高亮（叠在休息底上仍可见） */
 .calendar-cell-today {
   border-radius: 18rpx;
-  background: rgba(34, 197, 94, 0.1);
+  background: rgba(34, 197, 94, 0.12);
   box-shadow: inset 0 0 0 2rpx rgba(34, 197, 94, 0.55);
+}
+
+.calendar-cell-weekly-rest.calendar-cell-today {
+  background: linear-gradient(160deg, rgba(99, 102, 241, 0.12) 0%, rgba(34, 197, 94, 0.1) 100%);
+  box-shadow: inset 0 0 0 2rpx rgba(34, 197, 94, 0.5);
 }
 
 .calendar-day {

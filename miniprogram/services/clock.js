@@ -1,7 +1,7 @@
 const { RECORDS_KEY, DEV_MOCK_OVERTIME_KEY, DEV_MOCK_OVERTIME_OFFSET_KEY } = require('../constants/storage-keys');
 const { isDevelopEnv } = require('../utils/env');
 const { getSettings, saveSettings } = require('./settings');
-const { buildRecordSnapshot, buildLiveSnapshot } = require('../core/dilution');
+const { buildRecordSnapshot, buildLiveSnapshot, workedMinutesBetween } = require('../core/dilution');
 const { calcNetMonthly } = require('../core/insurance');
 const {
   calcBaseHourly,
@@ -107,6 +107,12 @@ function todayStr(d = new Date()) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
+/** 日期字符串是否晚于今天（本地日历日）。 */
+function isFutureDate(dateStr, now = new Date()) {
+  if (!dateStr) return false;
+  return dateStr > todayStr(now);
+}
+
 function nowTimeStr(d = new Date()) {
   return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 }
@@ -145,6 +151,21 @@ function getTodayState() {
   return 'done';
 }
 
+function adjustCompLeaveBalance(delta) {
+  const n = Number(delta) || 0;
+  if (n === 0) return;
+  const s = getSettings();
+  saveSettings({ compLeaveBalance: Math.max(0, (s.compLeaveBalance || 0) + n) });
+}
+
+function defaultRecordTimes(settings) {
+  const schedule = resolveSchedule(settings);
+  return {
+    startTime: schedule.morning.start,
+    endTime: formatMinutesToTime(getLastWorkBlockEnd(schedule, !!settings.nightShiftEnabled)),
+  };
+}
+
 function startWork(options = {}) {
   const today = todayStr();
   const records = getAllRecordsIncludingTombstones();
@@ -163,15 +184,15 @@ function startWork(options = {}) {
   };
 
   const next = existing
-    ? records.map((r) => (r.date === today ? { ...r, ...record } : r))
-    : [...records, record];
+    ? records.map((r) => (r.id === existing.id ? { ...r, ...record } : r))
+    : [...records.filter((r) => r.date !== today), record];
   saveRecords(next);
   return record;
 }
 
 /**
  * 工作日到点自动开始：在「工作日 + 处于排班工作时段 + 今日尚无任何记录」时，
- * 以排班起点为 startTime 自动创建上班记录。删除当天记录视为「今天休息」，不会重复创建。
+ * 以排班起点为 startTime 自动创建上班记录。已有有效记录（含进行中/已收工）时不重复创建。
  * @param {Date} now
  * @returns {object|null} 新建的记录；不满足条件返回 null
  */
@@ -181,7 +202,7 @@ function autoStartWorkIfDue(now = new Date()) {
 
   const today = todayStr(now);
   const records = getAllRecordsIncludingTombstones();
-  if (records.some((r) => r.date === today)) return null;
+  if (records.some((r) => r.date === today && !r.deleted)) return null;
 
   // 仅工作日/调休补班日自动开始；休息日、法定节假日需用户手动「今天要上班」。
   const dayType = resolveDayType(today, settings, holidayMapAround(now));
@@ -272,10 +293,8 @@ function clockOut() {
     syncedAt: null,
   };
   saveRecords(records.map((r) => (r.date === today ? updated : r)));
-  // 调休：工作在节假日/休息日且选择调休 → 调休余额 +1
   if (snap.premiumMultiplier > 1 && snap.compLeave) {
-    const s = getSettings();
-    saveSettings({ compLeaveBalance: (s.compLeaveBalance || 0) + 1 });
+    adjustCompLeaveBalance(1);
   }
   return updated;
 }
@@ -402,9 +421,11 @@ function buildRecordEditView(settings, startTime, endTime, options = {}) {
     };
   }
 
-  const snap = buildRecordSnapshot(settings, startTime, endTime);
-  const inOvertime = elapsed > standardMinutes;
-  const overtimeMinutes = Math.max(0, elapsed - standardMinutes);
+  const snap = buildRecordSnapshot(settings, scheduleAnchorStart(settings), endTime);
+  const workedMinutes = workedMinutesBetween(settings, scheduleAnchorStart(settings), endTime);
+  const payAnchorStart = scheduleAnchorStart(settings);
+  const inOvertime = workedMinutes > standardMinutes;
+  const overtimeMinutes = Math.max(0, workedMinutes - standardMinutes);
   return {
     valid: true,
     earned: roundMoney(snap.earned).toFixed(2),
@@ -413,12 +434,16 @@ function buildRecordEditView(settings, startTime, endTime, options = {}) {
     hourlyColor: dilutionColor(snap.dilutionPct),
     inOvertime,
     overtimeDuration: inOvertime ? formatOvertimeDuration(overtimeMinutes) : '',
+    payAnchorStart,
     compLeave: false,
     ...meta,
   };
 }
 
 function upsertManualRecord({ id, date, startTime, endTime, compLeave }) {
+  if (isFutureDate(date)) {
+    return { ok: false, error: 'FUTURE_DATE' };
+  }
   if (!validateRecordTimes(startTime, endTime)) {
     return { ok: false, error: 'END_BEFORE_START' };
   }
@@ -433,6 +458,8 @@ function upsertManualRecord({ id, date, startTime, endTime, compLeave }) {
   const records = getAllRecordsIncludingTombstones();
   const existing = records.find((r) => (id && r.id === id) || (r.date === date && !r.deleted));
   const isPremium = snap.premiumMultiplier > 1;
+  const prevCompLeave = !!(existing && existing.premiumMultiplier > 1 && existing.compLeave);
+  const nextCompLeave = isPremium && snap.compLeave;
   const record = {
     id: existing?.id || `rec_${Date.now()}`,
     date,
@@ -449,6 +476,8 @@ function upsertManualRecord({ id, date, startTime, endTime, compLeave }) {
   };
   const next = records.filter((r) => r.id !== record.id && r.date !== date);
   saveRecords([...next, record]);
+  if (nextCompLeave && !prevCompLeave) adjustCompLeaveBalance(1);
+  if (!nextCompLeave && prevCompLeave) adjustCompLeaveBalance(-1);
   return { ok: true, record };
 }
 
@@ -457,6 +486,9 @@ function deleteRecord(id) {
   const records = getAllRecordsIncludingTombstones();
   const target = records.find((r) => r.id === id && !r.deleted);
   if (!target) return false;
+  if (target.premiumMultiplier > 1 && target.compLeave) {
+    adjustCompLeaveBalance(-1);
+  }
   const tombstone = {
     ...target,
     deleted: true,
@@ -532,7 +564,7 @@ function buildHomeView(settings, record, now = new Date(), holidayMap = null) {
     const activeRest = state === 'working' ? currentRestWindow(endMin, restWins) : null;
     const compLeave = !!record.compLeave;
     const premiumEarned = compLeave ? 0 : roundMoney((baseHourly * worked) / 60 * premiumMultiplier);
-    const ringPct = Math.min(100, Math.round((worked / standardMinutes) * 100));
+    const premiumWorkedDisplay = formatOvertimeDuration(worked);
     return {
       state,
       baseHourly: baseHourlyDisplay,
@@ -540,8 +572,9 @@ function buildHomeView(settings, record, now = new Date(), holidayMap = null) {
       effectiveHourly: roundMoney(baseHourly * premiumMultiplier).toFixed(2),
       dilutionPct: 0,
       dilutionDisplay: 0,
-      ringPct,
-      ringDeg: Math.round((ringPct / 100) * 360),
+      ringPct: 0,
+      ringDeg: 0,
+      premiumWorkedDisplay,
       ringColor: dayType === DAY_TYPE.STATUTORY_HOLIDAY ? HOLIDAY_RING_COLOR : WEEKEND_RING_COLOR,
       hourlyColor: '#22c55e',
       inOvertime: false,
@@ -614,6 +647,8 @@ function buildHomeView(settings, record, now = new Date(), holidayMap = null) {
     inOvertime: state === 'working' && !restMode && inOvertime,
     overtimeLabel: overtimeMinutes > 0 ? formatOvertimeLabel(overtimeMinutes) : '',
     overtimeDuration: overtimeMinutes > 0 ? formatOvertimeDuration(overtimeMinutes) : '',
+    punchTime: record.startTime,
+    showPunchTime: record.startTime !== schedule.morning.start,
     // 计薪锚定预设上班时间，显示也用锚点，避免「12:50 起 / 已赚含上午」口径不一致。
     startTime: schedule.morning.start,
     endTime: record.endTime || '',
@@ -627,6 +662,7 @@ function buildHomeView(settings, record, now = new Date(), holidayMap = null) {
 
 module.exports = {
   todayStr,
+  isFutureDate,
   nowTimeStr,
   getRecords,
   getAllRecordsIncludingTombstones,
@@ -645,6 +681,7 @@ module.exports = {
   validateRecordTimes,
   upsertManualRecord,
   deleteRecord,
+  defaultRecordTimes,
   dilutionColor,
   computeMockOvertimeNow,
   isDevMockOvertime,

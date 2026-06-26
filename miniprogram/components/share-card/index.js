@@ -35,12 +35,12 @@ function drawShareCard(ctx, w, h, data) {
 
   ctx.fillStyle = '#94a3b8';
   ctx.font = '12px sans-serif';
-  const meta = `${data.startTime || ''} – ${data.endTime || ''} · 有效时薪 ¥${data.effectiveHourly || '0.00'}`;
+  const meta = `${data.startTime || ''} – ${data.endTime || ''} · 卷后价 ¥${data.effectiveHourly || '0.00'}`;
   ctx.fillText(meta, 24, 148);
 
   ctx.fillStyle = '#475569';
   ctx.font = '10px sans-serif';
-  ctx.fillText('数据来自你亲手搬的每一块砖', 24, h - 20);
+  ctx.fillText('数据来自你今天卷出的每一滴血汗', 24, h - 20);
 }
 
 Component({

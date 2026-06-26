@@ -1,5 +1,5 @@
 const safeArea = require('../../behaviors/safe-area');
-const { DEFAULT_INSURANCE } = require('../../core/insurance');
+const { DEFAULT_INSURANCE, INSURANCE_PERSONAL_LIMITS, insuranceToPercent, percentToInsurance, clampInsurancePercent } = require('../../core/insurance');
 const {
   defaultWorkSchedule,
   computeDailyWorkHours,
@@ -50,6 +50,7 @@ Page({
     },
     insurance: { ...DEFAULT_INSURANCE },
     insurancePresets: INSURANCE_PRESETS,
+    insuranceLimits: INSURANCE_PERSONAL_LIMITS,
     workPresets: WORK_PRESETS,
     selectedInsurancePreset: 'national_common',
     selectedWorkPreset: 'legal_double_rest',
@@ -76,6 +77,11 @@ Page({
   onShow() {
     if (!this.data.pageReady) {
       this.setData({ pageReady: true });
+    }
+    const s = getSettings();
+    if (this._settingsUpdatedAt !== s.updatedAt) {
+      this.loadFormFromSettings();
+      this._settingsUpdatedAt = s.updatedAt;
     }
     this.refreshCloudSyncUI();
   },
@@ -167,6 +173,10 @@ Page({
   },
 
   onLoad() {
+    this.loadFormFromSettings();
+  },
+
+  loadFormFromSettings() {
     const s = getSettings();
     const workSchedule = s.workSchedule || defaultWorkSchedule(s.workStartTime);
     const nightShiftEnabled = !!s.nightShiftEnabled;
@@ -196,17 +206,13 @@ Page({
       weekdayChips: this.buildWeekdayChips(restSystem),
       selectedWorkPreset: presetByRest[restSystem] || 'custom',
       insurance: s.insurance,
-      insurancePercent: {
-        pension: roundPercent((s.insurance.pension || 0) * 100, 1),
-        medical: roundPercent((s.insurance.medical || 0) * 100, 1),
-        unemployment: roundPercent((s.insurance.unemployment || 0) * 100, 2),
-        fund: roundPercent((s.insurance.fund || 0) * 100, 1),
-      },
+      insurancePercent: insuranceToPercent(s.insurance),
       selectedInsurancePreset: 'custom',
     });
     this.recomputeComputedHours();
     this.updateCanSave();
     this.refreshCloudSyncUI();
+    this._settingsUpdatedAt = s.updatedAt;
   },
 
   recomputeComputedHours() {
@@ -356,10 +362,10 @@ Page({
 
   onInsuranceSlider(e) {
     const key = e.currentTarget.dataset.key;
+    if (INSURANCE_PERSONAL_LIMITS[key]?.fixed) return;
     const raw = Number(e.detail.value);
-    const display = key === 'unemployment' ? roundPercent(raw, 2) : roundPercent(raw, 1);
-    const insurancePercent = { ...this.data.insurancePercent, [key]: display };
-    const insurance = { ...this.data.insurance, [key]: display / 100 };
+    const insurancePercent = clampInsurancePercent({ ...this.data.insurancePercent, [key]: raw });
+    const insurance = percentToInsurance(insurancePercent);
     this.setData(
       {
         selectedInsurancePreset: 'custom',
@@ -381,7 +387,7 @@ Page({
   onSave() {
     const salary = Number(this.data.monthlySalary);
     if (!salary || salary <= 0) {
-      wx.showToast({ title: '月薪填一个，总不能白卖命', icon: 'none' });
+      wx.showToast({ title: '卖身价填一个，总不能白卖命', icon: 'none' });
       return;
     }
     const scheduleResult = validateWorkSchedule(this.data.workSchedule, this.data.nightShiftEnabled);
@@ -410,7 +416,7 @@ Page({
       },
       { skipSchedule: cloudOn }
     );
-    wx.showToast({ title: '行，就这么搬', icon: 'success' });
+    wx.showToast({ title: '已保存 · 历史记录金额不变', icon: 'success' });
     if (cloudOn) {
       const { syncNow } = require('../../services/sync');
       syncNow().finally(() => this.refreshCloudSyncUI());

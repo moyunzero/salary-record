@@ -1,3 +1,5 @@
+const { DAY_TYPE, resolveDayType } = require('../../core/work-calendar');
+
 function pad2(n) {
   return String(n).padStart(2, '0');
 }
@@ -8,6 +10,9 @@ Component({
     month: { type: Number, value: 1 },
     markedDates: { type: Array, value: [] },
     holidays: { type: Object, value: {} },
+    showOfficialHolidays: { type: Boolean, value: true },
+    /** 工作制：restSystem / bigSmall / workWeekdays / holidayAutoRest */
+    workSettings: { type: Object, value: {} },
   },
 
   data: {
@@ -17,7 +22,7 @@ Component({
   },
 
   observers: {
-    'year, month, markedDates, holidays': function () {
+    'year, month, markedDates, holidays, showOfficialHolidays, workSettings': function () {
       this.buildGrid();
     },
   },
@@ -40,6 +45,8 @@ Component({
         else if (m && m.date) markMap[m.date] = m.kind || 'work';
       });
       const holidays = this.properties.holidays || {};
+      const showOfficialHolidays = this.properties.showOfficialHolidays !== false;
+      const workSettings = this.properties.workSettings || {};
       const now = new Date();
       const todayStr = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`;
       const first = new Date(year, month - 1, 1);
@@ -53,15 +60,19 @@ Component({
       for (let day = 1; day <= daysInMonth; day += 1) {
         const date = `${year}-${pad2(month)}-${pad2(day)}`;
         const h = holidays[date];
+        const dayType = resolveDayType(date, workSettings, holidays);
         let tag = '';
         let holidayName = '';
         let isHoliday = false;
-        if (h && h.type === 'public_holiday') {
+        let isWeeklyRest = false;
+        if (showOfficialHolidays && h && h.type === 'public_holiday') {
           tag = '休';
           holidayName = h.name || '';
           isHoliday = true;
-        } else if (h && h.type === 'transfer_workday') {
+        } else if (showOfficialHolidays && h && h.type === 'transfer_workday') {
           tag = '班';
+        } else if (dayType === DAY_TYPE.WEEKLY_REST) {
+          isWeeklyRest = true;
         }
         cells.push({
           empty: false,
@@ -72,7 +83,9 @@ Component({
           tag,
           holidayName,
           isHoliday,
+          isWeeklyRest,
           isToday: date === todayStr,
+          isFuture: date > todayStr,
         });
       }
       while (cells.length % 7 !== 0) {
@@ -86,8 +99,8 @@ Component({
     },
 
     onDayTap(e) {
-      const { date } = e.currentTarget.dataset;
-      if (!date || String(date).indexOf('pad-') === 0 || String(date).indexOf('empty-') === 0) {
+      const { date, future } = e.currentTarget.dataset;
+      if (!date || future || String(date).indexOf('pad-') === 0 || String(date).indexOf('empty-') === 0) {
         return;
       }
       this.triggerEvent('daytap', { date });

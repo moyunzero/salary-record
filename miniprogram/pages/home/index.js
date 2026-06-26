@@ -37,7 +37,7 @@ function heroLabelFor(state) {
   if (state === 'working') return '今日血汗';
   if (state === 'done') return '今日血汗';
   if (state === 'rest') return '今天躺平';
-  return '牛马时薪';
+  return '卷前价';
 }
 
 function buildRingSvgStyle(pct, color) {
@@ -83,7 +83,7 @@ Page({
     endTime: '',
     ringSvgStyle: '',
     ringGlowStyle: '',
-    heroLabel: '基础时薪',
+    heroLabel: '卷前价',
     heroAmount: '0.00',
     amountSizeClass: 'home-amount-lg',
     inOvertime: false,
@@ -298,8 +298,8 @@ Page({
     if (this._restMode !== null && this._restMode !== next.restMode) {
       wx.showToast({
         title: next.restMode
-          ? `${next.restLabel}到，放下砖头，月薪照拿`
-          : '摸鱼结束，继续当牛马',
+          ? `${next.restLabel}到，刑期结束，卖身价照拿`
+          : '摸鱼结束，继续当社畜',
         icon: 'none',
       });
     }
@@ -321,7 +321,7 @@ Page({
     if (!isDevelopEnv()) return;
     const record = getTodayRecord();
     if (!record || record.endTime) {
-      wx.showToast({ title: '请先开始搬砖', icon: 'none' });
+      wx.showToast({ title: '请先开始卷', icon: 'none' });
       return;
     }
     const on = toggleDevMockOvertime();
@@ -411,14 +411,14 @@ Page({
   // 休息日 / 法定节假日：用户主动「今天要上班」，选择倍数加班费或调休。
   onWorkOnRestDay() {
     const { premiumMultiplier, dayType, restDayKind } = this.data;
-    const kindLabel = restDayKind === 'holiday' ? '法定节假日' : '休息日';
+    const kindLabel = restDayKind === 'holiday' ? '恩假' : '休沐';
     wx.showActionSheet({
-      itemList: [`认命，按 ${premiumMultiplier} 倍拿加班费`, '记调休，今天的命白搭'],
+      itemList: [`认命，按 ${premiumMultiplier} 倍拿自愿卷薪`, '记白干，今天的命白搭'],
       success: (res) => {
         const compLeave = res.tapIndex === 1;
         startWork({ dayType, compLeave });
         wx.showToast({
-          title: compLeave ? `${kindLabel}搬砖 · 已记调休` : `${kindLabel}加班 · ${premiumMultiplier}× 计薪`,
+          title: compLeave ? `${kindLabel}开卷 · 已记白干` : `${kindLabel}自愿卷 · ${premiumMultiplier}× 计薪`,
           icon: 'none',
         });
         this.refresh();
@@ -430,7 +430,7 @@ Page({
     if (this.data.ritualActive) return;
     const result = clockOut();
     if (!result) {
-      wx.showToast({ title: '都还没搬砖，跑什么路', icon: 'none' });
+      wx.showToast({ title: '都还没开卷，跑什么路', icon: 'none' });
       return;
     }
     vibrateShort('medium');
@@ -483,6 +483,6 @@ Page({
         imageUrl: path,
       };
     }
-    return { title: '薪时宝 · 今天的牛马生涯告一段落', path: '/pages/home/index' };
+    return { title: '薪时宝 · 今天的社畜生涯告一段落', path: '/pages/home/index' };
   },
 });

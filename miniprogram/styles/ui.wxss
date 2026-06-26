@@ -330,6 +330,25 @@ page {
   line-height: 1.5;
 }
 
+.hint-legal {
+  margin: 16rpx 0 20rpx;
+  font-size: 20rpx;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.slider-row-fixed {
+  margin-bottom: 8rpx;
+}
+
+.slider-fixed-note {
+  display: block;
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #64748b;
+  line-height: 1.45;
+}
+
 /* ── 输入 ── */
 .input-wrap {
   display: flex;

@@ -1,5 +1,5 @@
 const { SETTINGS_KEY } = require('../constants/storage-keys');
-const { DEFAULT_INSURANCE } = require('../core/insurance');
+const { DEFAULT_INSURANCE, clampInsurance } = require('../core/insurance');
 const { defaultWorkSchedule, computeDailyWorkHours } = require('../core/work-schedule');
 
 const DEFAULT_WORK_WEEKDAYS = [1, 2, 3, 4, 5];
@@ -53,6 +53,9 @@ function migrateSettings(stored) {
   }
   if (typeof next.compLeaveBalance !== 'number') {
     next = { ...next, compLeaveBalance: 0 };
+  }
+  if (next.insurance) {
+    next = { ...next, insurance: clampInsurance(next.insurance) };
   }
   return next;
 }

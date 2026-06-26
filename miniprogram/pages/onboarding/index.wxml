@@ -19,17 +19,17 @@
     </view>
 
     <view class="preview-card {{showPreview ? 'preview-visible' : ''}}">
-      <view class="preview-label">预估牛马时薪</view>
+      <view class="preview-label">预估卷后价</view>
       <view class="preview-hero" wx:if="{{showPreview}}">
         <text class="preview-currency">¥</text>
         <text class="preview-value tabular">{{previewHourly}}</text>
         <text class="preview-unit">/时</text>
       </view>
-      <view class="preview-placeholder" wx:else>输入月薪，看看你这条牛马值多少</view>
+      <view class="preview-placeholder" wx:else>填卖身价，算算值多少钱</view>
       <view class="preview-meta" wx:if="{{showPreview}}">
         <text>到手月薪 ¥{{previewNetMonthly}}</text>
         <text class="preview-dot">·</text>
-        <text>{{previewMonthlyHours}} 标准工时/月</text>
+        <text>{{previewMonthlyHours}} 刑期/月</text>
       </view>
     </view>
   </view>
@@ -39,7 +39,7 @@
       <view class="section-head">
         <view class="section-badge">01</view>
         <view>
-          <view class="section-label">税前月薪</view>
+          <view class="section-label">卖身价</view>
           <view class="title">卖身价，谈好了多少？</view>
         </view>
       </view>
@@ -60,7 +60,7 @@
       <view class="section-head">
         <view class="section-badge">02</view>
         <view>
-          <view class="section-label">五险一金</view>
+          <view class="section-label">福报扣</view>
           <view class="title">个人缴纳比例</view>
         </view>
       </view>
@@ -82,26 +82,27 @@
           </view>
         </view>
       </view>
+      <view class="hint hint-legal">仅为税后估算参考，不构成社保或法律意见；实际扣款以用人单位及参保地经办机构为准。</view>
       <view class="fine-tune-toggle" bindtap="toggleInsuranceFineTune">
-        <text>微调比例（可选）</text>
+        <text>微调失业与公积金（可选）</text>
         <text class="fine-tune-chevron {{insuranceFineTuneOpen ? 'open' : ''}}">›</text>
       </view>
       <view class="fine-tune-body" wx:if="{{insuranceFineTuneOpen}}">
-        <view class="slider-row">
+        <view class="slider-row slider-row-fixed">
           <view class="slider-label"><text>养老</text><text class="tabular">{{insurancePercent.pension}}%</text></view>
-          <slider min="0" max="20" step="0.5" value="{{insurancePercent.pension}}" data-key="pension" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+          <text class="slider-fixed-note">全国统一 8%，不可调</text>
         </view>
-        <view class="slider-row">
+        <view class="slider-row slider-row-fixed">
           <view class="slider-label"><text>医疗</text><text class="tabular">{{insurancePercent.medical}}%</text></view>
-          <slider min="0" max="10" step="0.5" value="{{insurancePercent.medical}}" data-key="medical" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+          <text class="slider-fixed-note">职工医保常见 2%，不可调</text>
         </view>
         <view class="slider-row">
           <view class="slider-label"><text>失业</text><text class="tabular">{{insurancePercent.unemployment}}%</text></view>
-          <slider min="0" max="5" step="0.1" value="{{insurancePercent.unemployment}}" data-key="unemployment" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+          <slider min="{{insuranceLimits.unemployment.min}}" max="{{insuranceLimits.unemployment.max}}" step="{{insuranceLimits.unemployment.step}}" value="{{insurancePercent.unemployment}}" data-key="unemployment" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
         </view>
         <view class="slider-row">
           <view class="slider-label"><text>公积金</text><text class="tabular">{{insurancePercent.fund}}%</text></view>
-          <slider min="0" max="20" step="0.5" value="{{insurancePercent.fund}}" data-key="fund" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
+          <slider min="{{insuranceLimits.fund.min}}" max="{{insuranceLimits.fund.max}}" step="{{insuranceLimits.fund.step}}" value="{{insurancePercent.fund}}" data-key="fund" bindchanging="onInsuranceSlider" bindchange="onInsuranceSlider" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
         </view>
       </view>
     </view>
@@ -110,7 +111,7 @@
       <view class="section-head">
         <view class="section-badge">03</view>
         <view>
-          <view class="section-label">标准工时</view>
+          <view class="section-label">刑期</view>
           <view class="title">你被安排的作息</view>
         </view>
       </view>
@@ -138,7 +139,7 @@
       </view>
       <view class="fine-tune-body" wx:if="{{workFineTuneOpen}}">
         <view class="slider-row">
-          <view class="slider-label"><text>每日标准工时</text><text class="tabular">{{standardHoursPerDay}} 小时</text></view>
+          <view class="slider-label"><text>每日刑期</text><text class="tabular">{{standardHoursPerDay}} 小时</text></view>
           <slider min="6" max="12" step="1" value="{{standardHoursPerDay}}" bindchanging="onStandardHours" bindchange="onStandardHours" activeColor="#22c55e" backgroundColor="rgba(255,255,255,0.12)" block-color="#f8fafc" block-size="20" />
         </view>
         <view class="slider-row">
@@ -150,6 +151,6 @@
   </view>
 
   <view class="footer" style="padding-bottom: {{safeBottom + 24}}px">
-    <button class="btn-primary {{canFinish ? '' : 'btn-disabled'}}" bindtap="onFinish" hover-class="btn-hover">开始上坟</button>
+    <button class="btn-primary {{canFinish ? '' : 'btn-disabled'}}" bindtap="onFinish" hover-class="btn-hover">开始上刑</button>
   </view>
 </view>
